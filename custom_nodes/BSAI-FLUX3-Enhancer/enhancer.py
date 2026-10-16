@@ -8,7 +8,8 @@ Per-target-model recipes (FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3),
 outputs a positive + negative prompt pair.
 
 中文辅助说明（辅助信息，不影响英文 UI）：本节点定位为"工作流内嵌"的中文优先提示词增强器，
-LLM 路径复用百声 Strata 服务，未运行时自动降级规则引擎。
+LLM 路径复用百声 Strata 服务；选中 strata 档（strata_local / auto）且服务未运行时，
+节点会自动拉起 Strata 后台并等待就绪（按 /models 已加载模型判定），实在起不来才降级规则引擎。
 """
 import os
 import sys
@@ -19,6 +20,7 @@ if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 
 from strata_client import strata_health, strata_chat  # noqa: E402
+from strata_launcher import ensure_strata  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Model recipes
@@ -147,7 +149,8 @@ class BSAI_FLUX3_PromptEnhancer:
     DESCRIPTION = (
         "Chinese-first prompt enhancer for FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3. "
         "Enhances a rough Chinese prompt into a detailed image prompt (positive + negative). "
-        "Uses the local Strata LLM when available and falls back to a built-in rule engine."
+        "Uses the local Strata LLM (auto-starts it when selected and offline) and falls back "
+        "to a built-in rule engine."
     )
     SEARCH_ALIASES = [
         "prompt enhancer", "prompt expander", "prompt engineer", "text enhancer",
@@ -186,6 +189,9 @@ class BSAI_FLUX3_PromptEnhancer:
         use_llm = engine in ("auto", "strata_local")
         if use_llm:
             try:
+                if not strata_health():
+                    # Strata selected but offline → auto-start the backend and wait.
+                    ensure_strata(log=print)
                 if strata_health():
                     messages = [
                         {"role": "system", "content": _build_system(target_model, language)},

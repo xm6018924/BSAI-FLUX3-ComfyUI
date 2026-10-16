@@ -93,11 +93,47 @@ Three tiers, one prompt — pick the stage that fits your need:
 You can also chain tier 1 → tier 2: connect the enhancer `positive` output to `TextGenerate.prompt`
 to run both enhancer and the official upsampler.
 
+### One workflow, three tiers (router)
+
+`workflows/flux3_klein_t2i_3tier.json` — a single UI workflow that puts **all three tiers into one
+graph**, switched by one node. This is the recommended starting point:
+
+```
+                    ┌─ BSAI FLUX3 Prompt Enhancer ─┐
+中文提示词(×3 同源) ─┤  BSAI FLUX3 Prompt Router    ├─▶ positive ─▶ CLIPTextEncode
+                    └─ CLIPLoader(upsampler)+TextGenerate ┘   └─▶ negative ─▶ CLIPTextEncode
+```
+
+- New node **`BSAI_FLUX3_PromptRouter`** (category `BSAI/FLUX3`): a `mode` combo with
+  `raw` / `enhancer` / `upsampler`. It routes the positive/negative pair accordingly and is
+  **lazy**: only the selected tier runs — unselected branches (e.g. the ~9.1 GB upsampler) are
+  never loaded (verified: raw & enhancer runs leave no upsampler load in the log).
+- Raw tier: prompt goes to FLUX3 exactly as typed (router `raw_prompt`).
+- Enhancer tier: enhancer `positive`/`negative` wired into the router (`engine=rule_only` by
+  default in the file; switch to `auto`/`strata_local` in the enhancer node to use Strata LLM).
+- Upsampler tier: `CLIPLoader` (upsampler, `type=flux3`) → `TextGenerate` → router `upsampled`
+  input. Includes the official BFL prompt-upsampler system prompt (embedded in the file) and
+  `max_length=768`; TextGenerate runs only when this tier is selected.
+- The three prompt boxes (router / enhancer / TextGenerate) are pre-filled with the same request;
+  edit any of them independently.
+- Verified on RTX 5090 Laptop 24 GB (CUDA), 1024×1024, INT8 distilled checkpoint:
+  raw ≈ 96–179 s · enhancer(rule_only) ≈ 76–170 s · upsampler ≈ 40–44 s (warm) — the upsampler
+  tier output matches the official rewrite (e.g. the requested neon text renders in the image).
+
+Import `flux3_klein_t2i_3tier.json` (drag & drop / File → Open). If your install stores the
+distilled UNET under `models/diffusion_models/Flux3/`, keep the `unet_name` value as saved;
+otherwise point it at the correct file.
+
 
 ### Strata LLM (optional)
 
 The LLM path reuses the **BSAI-LLM-Strata** service (OpenAI-compatible, `127.0.0.1:8080`, model `qwen3.8-flash-next`).
-If Strata is not running, the node silently falls back to the rule engine — it never errors out.
+- **Auto-start**: whenever `engine=strata_local` (or `auto`) runs while the backend is offline, the
+  node launches the Strata service itself (the same `run-q2_0.bat` you use manually, no console
+  window) and waits for it to become healthy — a real `/models` response with a loaded model, so a
+  "process up but not ready" false start is detected, not trusted. Startup is polled for up to
+  180 s; if it never becomes healthy the node falls back to the rule engine — it never errors out.
+- If Strata is already running, it is reused as-is (no second process is spawned).
 
 ### Standalone test
 

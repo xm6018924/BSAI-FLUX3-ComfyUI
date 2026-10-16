@@ -1,0 +1,329 @@
+{
+  "id": "77a4c7a5-90bc-4ac7-9818-ab9072d99a04",
+  "revision": 1,
+  "last_node_id": 19,
+  "last_link_id": 20,
+  "nodes": [
+    {
+      "id": 3,
+      "type": "KSampler",
+      "pos": [293.84, -22.37],
+      "size": [270, 474],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 1},
+        {"name": "positive", "type": "CONDITIONING", "link": 2},
+        {"name": "negative", "type": "CONDITIONING", "link": 3},
+        {"name": "latent_image", "type": "LATENT", "link": 4}
+      ],
+      "outputs": [{"name": "LATENT", "type": "LATENT", "links": [9]}],
+      "properties": {"Node name for S&R": "KSampler"},
+      "widgets_values": [1032970897071068, "randomize", 16, 1, "euler", "simple", 1],
+      "widgets_values_named": {"seed": 1032970897071068, "control_after_generate": "randomize", "steps": 16, "cfg": 1, "sampler_name": "euler", "scheduler": "simple", "denoise": 1}
+    },
+    {
+      "id": 4,
+      "type": "UNETLoader",
+      "pos": [-515.83, -29.10],
+      "size": [444.93, 82],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{"name": "MODEL", "type": "MODEL", "links": [1]}],
+      "properties": {"Node name for S&R": "UNETLoader"},
+      "widgets_values": ["Flux3\\flux3_image_klein_sd_int8_convrot.safetensors", "default"],
+      "widgets_values_named": {"unet_name": "Flux3\\flux3_image_klein_sd_int8_convrot.safetensors", "weight_dtype": "default"}
+    },
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": [-1.14, 448.98],
+      "size": [238.58, 106],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {"name": "width", "type": "INT", "widget": {"name": "width"}, "link": 12},
+        {"name": "height", "type": "INT", "widget": {"name": "height"}, "link": 13}
+      ],
+      "outputs": [{"name": "LATENT", "type": "LATENT", "links": [4]}],
+      "properties": {"Node name for S&R": "EmptyLatentImage"},
+      "widgets_values": [1024, 1024, 1],
+      "widgets_values_named": {"width": 1024, "height": 1024, "batch_size": 1}
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [-8.32, -20.14],
+      "size": [252.59, 88],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 6},
+        {"name": "text", "type": "STRING", "widget": {"name": "text"}, "link": 19}
+      ],
+      "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [2]}],
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": [""],
+      "widgets_values_named": {"text": ""}
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": [-4.02, 117.83],
+      "size": [252.03, 88],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 8},
+        {"name": "text", "type": "STRING", "widget": {"name": "text"}, "link": 20}
+      ],
+      "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [3]}],
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": [""],
+      "widgets_values_named": {"text": ""}
+    },
+    {
+      "id": 8,
+      "type": "VAELoader",
+      "pos": [-506.54, 117.90],
+      "size": [427.02, 58],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{"name": "VAE", "type": "VAE", "links": [10]}],
+      "properties": {"Node name for S&R": "VAELoader"},
+      "widgets_values": ["flux2-vae.safetensors"],
+      "widgets_values_named": {"vae_name": "flux2-vae.safetensors"}
+    },
+    {
+      "id": 9,
+      "type": "VAEDecode",
+      "pos": [605.70, -16.88],
+      "size": [140, 46],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 9},
+        {"name": "vae", "type": "VAE", "link": 10}
+      ],
+      "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [11]}],
+      "properties": {"Node name for S&R": "VAEDecode"}
+    },
+    {
+      "id": 10,
+      "type": "CLIPLoader",
+      "pos": [-501.03, 234.25],
+      "size": [419.77, 106],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{"name": "CLIP", "type": "CLIP", "links": [6, 8]}],
+      "properties": {"Node name for S&R": "CLIPLoader"},
+      "widgets_values": ["qwen3vl_4b_int8_convrot.safetensors", "flux3", "default"],
+      "widgets_values_named": {"clip_name": "qwen3vl_4b_int8_convrot.safetensors", "type": "flux3", "device": "default"}
+    },
+    {
+      "id": 11,
+      "type": "SaveImage",
+      "pos": [798.08, -12.73],
+      "size": [576.30, 618.34],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [{"name": "images", "type": "IMAGE", "link": 11}],
+      "outputs": [{"name": "images", "type": "IMAGE", "links": null}],
+      "properties": {"Node name for S&R": "SaveImage"},
+      "widgets_values": ["BSAI_FLUX3_3tier"],
+      "widgets_values_named": {"filename_prefix": "BSAI_FLUX3_3tier"}
+    },
+    {
+      "id": 12,
+      "type": "BSAI_FLUX3_PromptEnhancer",
+      "pos": [-499.71, 405.08],
+      "size": [421.33, 282],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "positive", "type": "STRING", "links": [14]},
+        {"name": "negative", "type": "STRING", "links": [15]}
+      ],
+      "properties": {"Node name for S&R": "BSAI_FLUX3_PromptEnhancer"},
+      "widgets_values": ["一只在雨夜霓虹灯下的流浪虎斑猫，毛发湿漉漉，赛博朋克城市街道，低机位", "flux3_klein", "rule_only", "zh", 512, 0.7, ""],
+      "widgets_values_named": {"raw_prompt": "一只在雨夜霓虹灯下的流浪虎斑猫，毛发湿漉漉，赛博朋克城市街道，低机位", "target_model": "flux3_klein", "engine": "rule_only", "language": "zh", "max_tokens": 512, "temperature": 0.7, "negative_hint": ""}
+    },
+    {
+      "id": 13,
+      "type": "ResolutionSelector",
+      "pos": [-7.02, 252.28],
+      "size": [245.86, 150],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [],
+      "outputs": [
+        {"name": "width", "type": "INT", "links": [12]},
+        {"name": "height", "type": "INT", "links": [13]}
+      ],
+      "properties": {"Node name for S&R": "ResolutionSelector", "ue_properties": {"widget_ue_connectable": {}, "version": "7.8", "input_ue_unconnectable": {}}},
+      "widgets_values": ["16:9 (Widescreen)", 2, 16],
+      "widgets_values_named": {"aspect_ratio": "16:9 (Widescreen)", "megapixels": 2, "multiple": 16}
+    },
+    {
+      "id": 14,
+      "type": "Note",
+      "pos": [4.10, 598.46],
+      "size": [215.60, 88],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note: steps",
+      "properties": {"ue_properties": {"widget_ue_connectable": {}, "version": "7.8", "input_ue_unconnectable": {}}},
+      "widgets_values": ["try 50 steps for better quality"],
+      "widgets_values_named": {"text": "try 50 steps for better quality"},
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 15,
+      "type": "BSAI_FLUX3_PromptRouter",
+      "pos": [95.00, 300.00],
+      "size": [300, 240],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {"name": "enhanced_positive", "type": "STRING", "widget": {"name": "enhanced_positive"}, "link": 14},
+        {"name": "enhanced_negative", "type": "STRING", "widget": {"name": "enhanced_negative"}, "link": 15},
+        {"name": "upsampled", "type": "STRING", "widget": {"name": "upsampled"}, "link": 18}
+      ],
+      "outputs": [
+        {"name": "positive", "type": "STRING", "links": [19]},
+        {"name": "negative", "type": "STRING", "links": [20]}
+      ],
+      "properties": {"Node name for S&R": "BSAI_FLUX3_PromptRouter"},
+      "widgets_values": ["enhancer", "一只在雨夜霓虹灯下的流浪虎斑猫，毛发湿漉漉，赛博朋克城市街道，低机位", "lowres, bad anatomy, bad hands, missing fingers, extra digits, blurry, jpeg artifacts, watermark, text, signature, deformed, ugly, oversaturated"],
+      "widgets_values_named": {"mode": "enhancer", "raw_prompt": "一只在雨夜霓虹灯下的流浪虎斑猫，毛发湿漉漉，赛博朋克城市街道，低机位", "negative_fallback": "lowres, bad anatomy, bad hands, missing fingers, extra digits, blurry, jpeg artifacts, watermark, text, signature, deformed, ugly, oversaturated"}
+    },
+    {
+      "id": 16,
+      "type": "CLIPLoader",
+      "pos": [-515.00, 720.00],
+      "size": [420, 106],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{"name": "CLIP", "type": "CLIP", "links": [16]}],
+      "properties": {"Node name for S&R": "CLIPLoader"},
+      "widgets_values": ["qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors", "flux3", "default"],
+      "widgets_values_named": {"clip_name": "qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors", "type": "flux3", "device": "default"}
+    },
+    {
+      "id": 17,
+      "type": "TextGenerate",
+      "pos": [-60.00, 700.00],
+      "size": [400, 460],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 16},
+        {"name": "image", "shape": 7, "type": "IMAGE", "link": null},
+        {"name": "video", "shape": 7, "type": "IMAGE", "link": null},
+        {"name": "audio", "shape": 7, "type": "AUDIO", "link": null},
+        {"name": "system_prompt", "shape": 7, "type": "STRING", "link": 17},
+        {"name": "prompt", "type": "STRING", "widget": {"name": "prompt"}, "link": null},
+        {"name": "sampling_mode.seed", "type": "INT", "widget": {"name": "sampling_mode.seed"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "generated_text", "type": "STRING", "links": [18]},
+        {"name": "thinking", "type": "STRING", "links": null}
+      ],
+      "properties": {"Node name for S&R": "TextGenerate", "ue_properties": {"widget_ue_connectable": {}, "version": "7.8", "input_ue_unconnectable": {}}},
+      "widgets_values": ["一只在雨夜霓虹灯下的流浪虎斑猫，毛发湿漉漉，赛博朋克城市街道，低机位", 768, "on", 0.7, 64, 0.95, 0.05, 1.05, 20261016, 0.0, false, true, "auto"],
+      "widgets_values_named": {"prompt": "一只在雨夜霓虹灯下的流浪虎斑猫，毛发湿漉漉，赛博朋克城市街道，低机位", "max_length": 768, "sampling_mode": "on", "sampling_mode.temperature": 0.7, "sampling_mode.top_k": 64, "sampling_mode.top_p": 0.95, "sampling_mode.min_p": 0.05, "sampling_mode.repetition_penalty": 1.05, "sampling_mode.seed": 20261016, "sampling_mode.presence_penalty": 0.0, "thinking": false, "use_default_template": true, "mtp": "auto"}
+    },
+    {
+      "id": 18,
+      "type": "PrimitiveStringMultiline",
+      "pos": [-515.00, 860.00],
+      "size": [430, 240],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{"name": "STRING", "type": "STRING", "links": [17]}],
+      "properties": {"Node name for S&R": "PrimitiveStringMultiline", "ue_properties": {"widget_ue_connectable": {}, "version": "7.8", "input_ue_unconnectable": {}}},
+      "widgets_values": ["You are the prompt upsampler of a text-to-image model. Expand the user's short request into ONE detailed, self-contained caption: the exact text the image model receives. Output only the caption, with no greetings, explanations, refusals, questions, Markdown, headings, JSON, coordinates, ids or angle-bracket tokens, and no quotes around it. If the input is not clearly an image request, caption a visualization of its concept. The request may begin with a \"TARGET CANVAS: W:H\" line: compose for that canvas (wide spreads content sideways, tall stacks it) and never mention the ratio or the canvas.\n\nFidelity and planning: keep every explicit subject, attribute, count, spatial constraint, style cue and piece of wording; never contradict, substitute, drop or narrow the request, and keep an abstract concept abstract. Decide everything left open as ONE concrete, consistent plan; never offer alternatives or hedge. Never re-express a stated constraint through another mechanism; add camera optics (depth of field, bokeh, blur) only when asked for or implied. Without a stated style, plan an actual photograph and open with the medium convention (\"Full-color outdoor photograph, ...\", \"Full-color indoor photograph, ...\", \"Studio photograph, ...\", \"Close-up photograph, ...\"); keep \"Photorealistic\" for renders, and turn \"photorealistic\" or \"realistic\" requests for photos into the photograph convention. Give a photograph a few ordinary, non-ideal specifics drawn from the scene's own objects instead of the stock-photo ideal. Do not invent names, brands, logos or celebrities; keep user-named ones. A long request keeps its content but not its wording: drop appraisal and sales vocabulary, turn moods into observable physical facts, and add only new concrete content with positions. Time of day is lighting, not rendered text.\n\nCaption format: one continuous prose block in the generative voice, never \"this image shows\", \"we can see\" or \"is visible\". Lead with medium and style, then scene, lighting and camera, then the subjects with concrete colors, materials and state. Every person in focus gets an observable profile: ethnicity, gender, age range, skin tone (\"fair skin\", \"brown skin\"), hair and clothing. Make the layout reconstructable from words: frame-relative positions (frame-left, frame-right, upper, lower, foreground, midground, background), sentence-initial anchors (\"On the left, ...\", \"In the background, ...\"), relations (holds, faces, behind) and a consistent order; describe up to about ten instances one by one, beyond that give the exact count and arrangement. Out-of-focus or distant planes are shapes, colors and silhouettes, never identities or readable text, and the background takes about a sixth of the caption. Be definite: no hedging adverbs, no quality or emotion judgments, no closing sentence about mood; state negations as what is present. Rendered text: transcribe every wording verbatim inside double quotes in its original language and script, keep the line breaks of multi-line text, and give its typography, color and placement; author concrete, domain-correct wording when the request needs text it does not supply, and name canonical structures (calendar, keyboard, periodic table) exactly with their full layout. All prose is English; only quoted text keeps its language. Typical length is 100 to 350 words, more for complex scenes.\n\nOutput only the caption.\n"],
+      "widgets_values_named": {"value": "You are the prompt upsampler of a text-to-image model. Expand the user's short request into ONE detailed, self-contained caption: the exact text the image model receives. Output only the caption, with no greetings, explanations, refusals, questions, Markdown, headings, JSON, coordinates, ids or angle-bracket tokens, and no quotes around it. If the input is not clearly an image request, caption a visualization of its concept. The request may begin with a \"TARGET CANVAS: W:H\" line: compose for that canvas (wide spreads content sideways, tall stacks it) and never mention the ratio or the canvas.\n\nFidelity and planning: keep every explicit subject, attribute, count, spatial constraint, style cue and piece of wording; never contradict, substitute, drop or narrow the request, and keep an abstract concept abstract. Decide everything left open as ONE concrete, consistent plan; never offer alternatives or hedge. Never re-express a stated constraint through another mechanism; add camera optics (depth of field, bokeh, blur) only when asked for or implied. Without a stated style, plan an actual photograph and open with the medium convention (\"Full-color outdoor photograph, ...\", \"Full-color indoor photograph, ...\", \"Studio photograph, ...\", \"Close-up photograph, ...\"); keep \"Photorealistic\" for renders, and turn \"photorealistic\" or \"realistic\" requests for photos into the photograph convention. Give a photograph a few ordinary, non-ideal specifics drawn from the scene's own objects instead of the stock-photo ideal. Do not invent names, brands, logos or celebrities; keep user-named ones. A long request keeps its content but not its wording: drop appraisal and sales vocabulary, turn moods into observable physical facts, and add only new concrete content with positions. Time of day is lighting, not rendered text.\n\nCaption format: one continuous prose block in the generative voice, never \"this image shows\", \"we can see\" or \"is visible\". Lead with medium and style, then scene, lighting and camera, then the subjects with concrete colors, materials and state. Every person in focus gets an observable profile: ethnicity, gender, age range, skin tone (\"fair skin\", \"brown skin\"), hair and clothing. Make the layout reconstructable from words: frame-relative positions (frame-left, frame-right, upper, lower, foreground, midground, background), sentence-initial anchors (\"On the left, ...\", \"In the background, ...\"), relations (holds, faces, behind) and a consistent order; describe up to about ten instances one by one, beyond that give the exact count and arrangement. Out-of-focus or distant planes are shapes, colors and silhouettes, never identities or readable text, and the background takes about a sixth of the caption. Be definite: no hedging adverbs, no quality or emotion judgments, no closing sentence about mood; state negations as what is present. Rendered text: transcribe every wording verbatim inside double quotes in its original language and script, keep the line breaks of multi-line text, and give its typography, color and placement; author concrete, domain-correct wording when the request needs text it does not supply, and name canonical structures (calendar, keyboard, periodic table) exactly with their full layout. All prose is English; only quoted text keeps its language. Typical length is 100 to 350 words, more for complex scenes.\n\nOutput only the caption.\n"}
+    },
+    {
+      "id": 19,
+      "type": "Note",
+      "pos": [150.00, 740.00],
+      "size": [280, 170],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note: 3-tier prompt switch",
+      "properties": {"ue_properties": {"widget_ue_connectable": {}, "version": "7.8", "input_ue_unconnectable": {}}},
+      "widgets_values": ["Mode 档位：\n· raw = 原样提示词\n· enhancer = 增强器(rule_only/Strata)\n· upsampler = 官方上采样器(约2-7分钟)\n\n未选中档位不会加载上采样器（懒执行）\n三档输入框默认同一句提示词，可分别修改"],
+      "widgets_values_named": {"text": "Mode 档位：\n· raw = 原样提示词\n· enhancer = 增强器(rule_only/Strata)\n· upsampler = 官方上采样器(约2-7分钟)\n\n未选中档位不会加载上采样器（懒执行）\n三档输入框默认同一句提示词，可分别修改"},
+      "color": "#222",
+      "bgcolor": "#000"
+    }
+  ],
+  "links": [
+    [1, 4, 0, 3, 0, "MODEL"],
+    [2, 6, 0, 3, 1, "CONDITIONING"],
+    [3, 7, 0, 3, 2, "CONDITIONING"],
+    [4, 5, 0, 3, 3, "LATENT"],
+    [6, 10, 0, 6, 0, "CLIP"],
+    [8, 10, 0, 7, 0, "CLIP"],
+    [9, 3, 0, 9, 0, "LATENT"],
+    [10, 8, 0, 9, 1, "VAE"],
+    [11, 9, 0, 11, 0, "IMAGE"],
+    [12, 13, 0, 5, 0, "INT"],
+    [13, 13, 1, 5, 1, "INT"],
+    [14, 12, 0, 15, 0, "STRING"],
+    [15, 12, 1, 15, 1, "STRING"],
+    [16, 16, 0, 17, 0, "CLIP"],
+    [17, 18, 0, 17, 4, "STRING"],
+    [18, 17, 0, 15, 2, "STRING"],
+    [19, 15, 0, 6, 1, "STRING"],
+    [20, 15, 1, 7, 1, "STRING"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {"scale": 0.74, "offset": [1055.25, 416.69]},
+    "qgn_navigation_groups": [],
+    "qgn_locked": false,
+    "frontendVersion": "1.55.17",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "extensions": {
+    "seed_widgets": {"109": 9, "137": 0, "1357": 0, "1382": 0}
+  },
+  "version": 0.4,
+  "seed_widgets": {"3": 0}
+}

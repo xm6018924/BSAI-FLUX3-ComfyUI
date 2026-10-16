@@ -79,11 +79,33 @@
 
 也可以 1→2 串联：把增强器 `positive` 输出接到 `TextGenerate.prompt`，同时跑增强器与官方上采样器。
 
+### 一个工作流、三档切换（路由器节点）
+
+`workflows/flux3_klein_t2i_3tier.json` —— 把**三档全部放进同一张图**、用一个节点切换的 UI 工作流，推荐从这里开始：
+
+```
+                    ┌─ BSAI FLUX3 Prompt Enhancer ─┐
+中文提示词(三处同源) ─┤  BSAI FLUX3 Prompt Router    ├─▶ positive ─▶ CLIPTextEncode
+                    └─ CLIPLoader(上采样器)+TextGenerate ┘   └─▶ negative ─▶ CLIPTextEncode
+```
+
+- 新增节点 **`BSAI_FLUX3_PromptRouter`**（分类 `BSAI/FLUX3`）：`mode` 下拉 `raw / enhancer / upsampler` 三选一，负责把正负向提示词路由到对应档位，且**懒执行**——只算选中的档，未选档（如 ~9.1GB 上采样器）完全不加载（raw / enhancer 档日志中无上采样器加载痕迹，已实测验证）。
+- raw 档：提示词原样进 FLUX3（路由器 `raw_prompt` 输入框）。
+- enhancer 档：增强器 `positive/negative` 接入路由器（文件默认 `engine=rule_only`；在增强器节点上切 `auto/strata_local` 即走 Strata LLM）。
+- upsampler 档：`CLIPLoader`（上采样器, type=flux3）→ `TextGenerate` → 路由器 `upsampled` 输入。文件内已内置官方 BFL 上采样系统提示词与 `max_length=768`；仅选中此档时 TextGenerate 才会执行。
+- 三个提示词输入框（路由器 / 增强器 / TextGenerate）默认填同一句，可分别修改。
+- RTX 5090 Laptop 24GB（CUDA）、1024×1024、INT8 蒸馏版实测：raw ≈96–179 秒 · enhancer(rule_only) ≈76–170 秒 · upsampler ≈40–44 秒（热实例）；upsampler 档出图与官方扩写文案对应（如画面中出现要求的霓虹文字）。
+
+把 `flux3_klein_t2i_3tier.json` 拖进 ComfyUI 即可（或 File → Open）。若你的安装把蒸馏 UNET 放在 `models/diffusion_models/Flux3/` 子目录，保持文件里的 `unet_name` 不变；否则改成你机器上的实际路径。
+
 
 ### Strata LLM（可选）
 
 LLM 路径复用 **BSAI-LLM-Strata** 服务（OpenAI 兼容，`127.0.0.1:8080`，模型 `qwen3.8-flash-next`）。
-Strata 未运行时节点静默降级到规则引擎，不会报错。
+- **自动启动**：`engine=strata_local`（或 `auto`）运行时若后台未启动，节点会自动拉起 Strata 服务
+  （即手动用的 `run-q2_0.bat`，无控制台窗口）并等待就绪——以 `/models` 真实返回已加载模型为判据，
+  规避"进程起了但端口/模型没就绪"的假成功；最多等待 180 秒，仍起不来才降级规则引擎，节点不会报错。
+- 若 Strata 已在运行则直接复用，不会重复拉起。
 
 ### 独立测试
 
