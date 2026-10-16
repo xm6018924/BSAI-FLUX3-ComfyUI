@@ -52,6 +52,7 @@ The "8 GB VRAM" claim holds for the INT8 distilled model under dynamic offloadin
 `BSAI FLUX3 Prompt Enhancer (CN-First)` (category `BSAI/FLUX3`):
 - Chinese-first: rough Chinese idea → dense, usable image prompt.
 - Dual engine: local Strata LLM (`127.0.0.1:8080`, via BSAI-LLM-Strata) with automatic rule-engine fallback — never errors.
+- Strata auto-start is reuse-first: if a Strata instance is already present (model healthy, port 8080 listening, or engine process loading), the node waits for it and **never spawns a second instance**; it only starts Strata when nothing is running.
 - Recipes for FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3; outputs `positive` + `negative`.
 - English UI per ComfyUI custom-node conventions; Chinese support via search aliases + README.zh-CN.md.
 

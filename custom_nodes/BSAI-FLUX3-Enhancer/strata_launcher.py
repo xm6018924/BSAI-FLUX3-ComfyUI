@@ -100,11 +100,47 @@ def _wait_healthy(timeout, log):
     return "timeout"
 
 
+def _port_open(timeout=2.0):
+    """True when something is already listening on the Strata port (8080).
+
+    A listening port means a Strata server is up — even if the model is still
+    loading and /models is not ready yet. Never spawn a second instance then.
+    """
+    try:
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(timeout)
+        r = s.connect_ex((STRATA_HOST, STRATA_PORT))
+        s.close()
+        return r == 0
+    except Exception:
+        return False
+
+
+def _engine_process_running():
+    """True when a Strata engine binary (strata.exe / strata-vision.exe) is alive.
+
+    Covers the brief window where the model manager has started the engine but
+    the HTTP server has not bound the port yet.
+    """
+    try:
+        out = subprocess.run(
+            ["tasklist", "/NH", "/FO", "CSV"], capture_output=True, text=True, timeout=10
+        ).stdout or ""
+        return ("strata.exe" in out) or ("strata-vision.exe" in out)
+    except Exception:
+        return False
+
+
 def ensure_strata(timeout=_DEFAULT_TIMEOUT, log=print):
     """Ensure the local Strata backend is running and healthy.
 
     Returns one of: "already_running" | "started" | "timeout" |
                     "no_script" | "spawn_error".
+
+    Reuse-first: if any Strata instance is already present — healthy (/models
+    has a model), port listening, or engine process running — we never spawn a
+    second one; we only wait for the existing instance to become healthy.
     """
     if _healthy():
         return "already_running"
@@ -116,6 +152,12 @@ def ensure_strata(timeout=_DEFAULT_TIMEOUT, log=print):
         now = time.time()
         if now - _LAST_ATTEMPT["t"] < _COOLDOWN_S:
             # A spawn was just issued by a parallel execution; wait for it.
+            return _wait_healthy(timeout, log)
+
+        # A Strata instance is already starting/loading (port up or engine up):
+        # wait for it instead of spawning a duplicate.
+        if _port_open() or _engine_process_running():
+            log("[BSAI-FLUX3-Enhancer] Strata already starting/loading; waiting for it (no second instance).")
             return _wait_healthy(timeout, log)
 
         script = _find_script()

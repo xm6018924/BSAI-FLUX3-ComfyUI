@@ -51,6 +51,7 @@ BSAI-FLUX3-ComfyUI/
 节点 `BSAI FLUX3 Prompt Enhancer (CN-First)`（分类 `BSAI/FLUX3`）：
 - 中文优先：一句中文粗略想法 → 可直接出图的详细提示词。
 - 双引擎：本地 Strata LLM（127.0.0.1:8080，复用 BSAI-LLM-Strata）在线走 LLM，离线自动降级规则引擎，永不出错。
+- Strata 自动启动为"复用优先"：只要已有 Strata 实例（模型就绪 / 8080 端口已监听 / 引擎进程加载中），节点只等待、绝不重复拉起第二个实例；仅在完全无实例时才自动启动。
 - FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3 三套配方；输出 `positive` + `negative`。
 - UI 为英文（符合 ComfyUI 自定义节点规范），中文体验由搜索别名 + README.zh-CN.md 提供。
 
