@@ -1,0 +1,60 @@
+# BSAI FLUX3 ComfyUI Pack
+
+One-click deployment & tooling for **FLUX 3 Image Klein** (5.6B open weights, Black Forest Labs) on the BSAI ComfyUI distribution, plus a **Chinese-first prompt enhancer** custom node.
+
+> 中文说明见 [README.zh-CN.md](./README.zh-CN.md)。
+
+## What's inside
+
+```
+BSAI-FLUX3-ComfyUI/
+├── adapter/                          # Intel XPU / GPU / NPU + NVIDIA adapter pack
+│   ├── README.md                     # adapter guide (hardware tiers, license, TODOs)
+│   ├── 01_下载FLUX3权重.bat          # weight downloader (hf-mirror + aria2, resumable)
+│   ├── 02_启动FLUX3_5090.bat         # NVIDIA CUDA launcher (port 8193)
+│   ├── 03_启动FLUX3_IntelXPU.bat     # Intel XPU/iGPU launcher (port 8194, Arc-ready)
+│   ├── bsai_flux3_check.py           # model integrity checker (exit 0 = ready)
+│   ├── run_flux3_test.py             # benchmark driver: submit → time → VRAM peak
+│   ├── workflows/flux3_klein_t2i_api.json
+│   ├── _license/                     # FLUX Kommunity License v1.0 archive
+│   ├── 许可核对报告_FLUX_Kommunity_License.md
+│   └── 实测报告_5090_FLUX3_Klein.md  # real measurements on RTX 5090 Laptop
+└── custom_nodes/
+    └── BSAI-FLUX3-Enhancer/          # ComfyUI prompt-enhancer custom node
+        ├── README.md / README.zh-CN.md
+        └── workflows/flux3_klein_t2i_enhanced_api.json   # example workflow
+```
+
+## Quick start
+
+1. Download the weights (≈30 GB total, resumable):
+   `adapter/01_下载FLUX3权重.bat` — the script checks integrity afterwards (8/8 required files).
+2. Launch:
+   - NVIDIA: `adapter/02_启动FLUX3_5090.bat` → http://127.0.0.1:8193
+   - Intel Arc / iGPU: `adapter/03_启动FLUX3_IntelXPU.bat` → http://127.0.0.1:8194
+3. Install the enhancer node: copy `custom_nodes/BSAI-FLUX3-Enhancer/` into `ComfyUI/custom_nodes/`, restart ComfyUI, then import the example workflow.
+
+## Measured results (RTX 5090 Laptop 24G, distilled INT8, 1024² / 16 steps)
+
+| Config | Total (cold) | Warm | VRAM peak |
+|---|---|---|---|
+| INT8 distilled | 98.3 s | **35.6 s** | ~13.8 GB |
+| BF16 distilled | 190.1 s | — | ~19.4 GB |
+| INT8 + low-VRAM mode (~9.4 GB budget) | 126.1 s | — | **~10.4 GB** |
+
+The "8 GB VRAM" claim holds for the INT8 distilled model under dynamic offloading; start from 512–768 px on true 8 GB cards. Details: `adapter/实测报告_5090_FLUX3_Klein.md`.
+
+## Prompt enhancer
+
+`BSAI FLUX3 Prompt Enhancer (CN-First)` (category `BSAI/FLUX3`):
+- Chinese-first: rough Chinese idea → dense, usable image prompt.
+- Dual engine: local Strata LLM (`127.0.0.1:8080`, via BSAI-LLM-Strata) with automatic rule-engine fallback — never errors.
+- Recipes for FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3; outputs `positive` + `negative`.
+- English UI per ComfyUI custom-node conventions; Chinese support via search aliases + README.zh-CN.md.
+
+## License
+
+- This repo: MIT (`LICENSE`).
+- FLUX 3 Image Klein weights are **not included**; they are governed by the [FLUX Kommunity License v1.0](adapter/_license/LICENSE.md) (free commercial use below US$5M annual revenue; no training/distillation of similar image models from FLUX outputs; redistribution must include the license + attribution notice). The download script points to a non-gated mirror; review the license before redistribution.
+
+> Intel XPU/iGPU path is Arc-ready but was validated on an RTX 5090 + Arc iGPU machine only; a dedicated Arc dGPU test is a TODO (see `adapter/README.md`).

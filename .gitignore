@@ -1,0 +1,12 @@
+# runtime / logs
+*.log
+*.err
+
+# python
+__pycache__/
+*.py[cod]
+
+# comfyui runtime data
+*.db
+*.sqlite3
+*.aria2

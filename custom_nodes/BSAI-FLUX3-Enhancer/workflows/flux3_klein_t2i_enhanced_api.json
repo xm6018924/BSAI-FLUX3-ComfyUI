@@ -1,0 +1,12 @@
+{
+  "3": {"class_type": "KSampler", "inputs": {"seed": 42, "steps": 16, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0, "model": ["4", 0], "positive": ["6", 0], "negative": ["7", 0], "latent_image": ["5", 0]}},
+  "4": {"class_type": "UNETLoader", "inputs": {"unet_name": "flux3_image_klein_sd_int8_convrot.safetensors", "weight_dtype": "default"}},
+  "5": {"class_type": "EmptyLatentImage", "inputs": {"width": 1024, "height": 1024, "batch_size": 1}},
+  "6": {"class_type": "CLIPTextEncode", "inputs": {"text": ["12", 0], "clip": ["10", 0]}},
+  "7": {"class_type": "CLIPTextEncode", "inputs": {"text": ["12", 1], "clip": ["10", 0]}},
+  "8": {"class_type": "VAELoader", "inputs": {"vae_name": "flux2-vae.safetensors"}},
+  "9": {"class_type": "VAEDecode", "inputs": {"samples": ["3", 0], "vae": ["8", 0]}},
+  "10": {"class_type": "CLIPLoader", "inputs": {"clip_name": "qwen3vl_4b_int8_convrot.safetensors", "type": "flux3"}},
+  "11": {"class_type": "SaveImage", "inputs": {"filename_prefix": "BSAI_FLUX3_enhanced", "images": ["9", 0]}},
+  "12": {"class_type": "BSAI_FLUX3_PromptEnhancer", "inputs": {"raw_prompt": "一只在雨夜霓虹灯下的流浪虎斑猫，毛发湿漉漉，赛博朋克城市街道，低机位", "target_model": "flux3_klein", "engine": "auto", "language": "zh", "max_tokens": 512, "temperature": 0.7, "negative_hint": ""}}
+}
