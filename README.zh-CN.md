@@ -9,20 +9,23 @@
 ```
 BSAI-FLUX3-ComfyUI/
 ├── adapter/                          # Intel XPU / GPU / NPU + NVIDIA 适配包
-│   ├── README.md                     # 适配包说明（硬件档位/许可/待办）
+│   ├── BSAI-FLUX3_README.md         # 适配包说明（硬件档位/许可/待办）
 │   ├── 01_下载FLUX3权重.bat          # 权重下载（hf-mirror + aria2 断点续传）
 │   ├── 02_启动FLUX3_5090.bat         # NVIDIA CUDA 启动（端口 8193）
 │   ├── 03_启动FLUX3_IntelXPU.bat     # Intel XPU/核显 启动（端口 8194，Arc 就绪）
 │   ├── bsai_flux3_check.py           # 模型完整性检查（退出码 0 = 就绪）
 │   ├── run_flux3_test.py             # 实测驱动：提交→计时→显存峰值
-│   ├── workflows/flux3_klein_t2i_api.json
+│   ├── workflows/flux3_klein_t2i_api.json            # 第0档：原始提示词
+│   ├── workflows/flux3_klein_t2i_upsampler_api.json  # 第2档：官方上采样器
 │   ├── _license/                     # FLUX Kommunity License v1.0 存档
 │   ├── 许可核对报告_FLUX_Kommunity_License.md
 │   └── 实测报告_5090_FLUX3_Klein.md  # RTX 5090 Laptop 实测
 └── custom_nodes/
     └── BSAI-FLUX3-Enhancer/          # ComfyUI 提示词增强器节点
         ├── README.md / README.zh-CN.md
-        └── workflows/flux3_klein_t2i_enhanced_api.json   # 示例工作流
+        └── workflows/
+            ├── flux3_klein_t2i_enhanced_api.json    # 第1档：增强器（rule / Strata LLM）
+            └── flux3_klein_t2i_upsampler_api.json   # 第2档：官方上采样器
 ```
 
 ## 快速开始
@@ -50,6 +53,20 @@ BSAI-FLUX3-ComfyUI/
 - 双引擎：本地 Strata LLM（127.0.0.1:8080，复用 BSAI-LLM-Strata）在线走 LLM，离线自动降级规则引擎，永不出错。
 - FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3 三套配方；输出 `positive` + `negative`。
 - UI 为英文（符合 ComfyUI 自定义节点规范），中文体验由搜索别名 + README.zh-CN.md 提供。
+
+## 三档提示词管线（同一句提示词，三套工作流）
+
+| 档位 | 工作流 | 行为 |
+|---|---|---|
+| 0. 原始 | `adapter/workflows/flux3_klein_t2i_api.json` | 提示词原样进 FLUX3 |
+| 1. 增强器 | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_enhanced_api.json` | rule_only=原文+质量词缀；auto/strata_local=Strata LLM 电影感扩写（中文优先） |
+| 2. 官方上采样器 | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_upsampler_api.json` | ComfyUI 原生 `TextGenerate` + BFL `qwen3.5-9B`：短请求→完整英文场景描述 |
+
+第 2 档只用 ComfyUI 0.41 原生节点（无需额外插件）：上采样器权重
+`qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors`（~9.1GB，`models/text_encoders/`）
+被识别为 `QWEN35_9B`，用 `CLIPLoader` + `type=flux3` 加载，`TextGenerate` 自回归扩写后接入正片。
+5090 Laptop 24G 实测：仅扩写首跑 ≈249s（冷加载为主），1024² 全流程首跑 ≈453s。
+上采样器模型许可为 Apache-2.0。也可 1→2 串联（增强器 `positive` → `TextGenerate.prompt`）。
 
 ## 许可
 

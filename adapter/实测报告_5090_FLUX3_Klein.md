@@ -59,6 +59,24 @@
 - LLM 引擎（strata_local）：本地 Strata（qwen3.8-flash-next-q2_0，127.0.0.1:8080）真实扩写成功——中文提示扩为 267 字电影感描述，positive/negative 双输出非空。
 - 降级行为正确：Strata 未运行时自动回退 rule_only。
 
+## 6.5 官方提示词上采样器验证（2026-10-16 追加）
+
+接入方式（全部 ComfyUI 0.41 原生节点，无需额外插件）：
+- `CLIPLoader`（clip_name=`qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors`，type=flux3）→ 识别为 `QWEN35_9B`，按 qwen35 全量生成式文本编码器加载；
+- `TextGenerate` 节点（comfy_extras/nodes_textgen.py）自回归扩写：短请求 → 完整英文场景描述（机位/光线/构图/细节）；
+- 扩写结果接入正片 `CLIPTextEncode` positive。
+
+实测（RTX 5090 Laptop 24G，1024² / 16 步蒸馏 INT8）：
+
+| 环节 | 耗时（首跑，含冷加载） | 结果 |
+|---|---|---|
+| 仅上采样器扩写（文本） | ≈249 s | ✅ 中文短请求 → ~170 词英文完整描述 |
+| 全流程端到端出图 | ≈453 s | ✅ `BSAI_FLUX3_upsampler_00001_.png` |
+
+- 中文输入正常理解，输出为英文完整场景描述（BFL PUP 设计如此）；扩写文本实测样例见 `ComfyUI/output/pup_caption_00001.txt`。
+- 上采样器模型许可 Apache-2.0（独立于 FLUX Kommunity License），重 9.08GB（int8_convrot）。
+- 三档对比工作流齐备：`flux3_klein_t2i_api.json`（原始）/ `flux3_klein_t2i_enhanced_api.json`（增强器）/ `flux3_klein_t2i_upsampler_api.json`（官方上采样器）。
+
 ## 7. 已知问题 / 待办
 
 1. **Strata 插件 auto-start 会"假成功"**：日志声称已启动但服务未监听 8080；手动执行 `custom_nodes\BSAI-LLM-Strata\Strata\run-q2_0.bat` 可正常拉起（已实测）。增强器对此有降级保护。

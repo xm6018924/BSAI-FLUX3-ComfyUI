@@ -64,6 +64,36 @@ Required checkpoints for the example (place them under `ComfyUI/models/`):
 Model sources are gated on the official HF repo; download via a non-gated mirror, and review the
 FLUX Kommunity License before redistribution (free commercial use requires annual revenue < US$5M).
 
+### Official prompt upsampler workflow (third tier)
+
+`workflows/flux3_klein_t2i_upsampler_api.json` — a complete FLUX 3 Image Klein distilled (INT8)
+text-to-image workflow that chains the **official FLUX3 prompt upsampler** in front of the sampler.
+It runs entirely on ComfyUI 0.41 native nodes — no extra plugin needed:
+
+```
+短请求 ──▶ CLIPLoader(upsampler, type=flux3) ──▶ TextGenerate ──▶ 完整场景描述 ──▶ CLIPTextEncode (positive)
+```
+
+- The upsampler checkpoint `qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors`
+  (~9.1 GB, `models/text_encoders/`) is detected by ComfyUI as `QWEN35_9B` and loaded with
+  `CLIPLoader` using `type=flux3`; `TextGenerate` then rewrites your short request into a full
+  English scene caption (framing, lighting, layout) before generation.
+- The upsampler model is Apache-2.0 licensed (separate from the FLUX Kommunity License).
+- Verified on RTX 5090 Laptop 24 GB (CUDA): text rewrite alone ≈ 249 s first run (mostly cold
+  model load), full 1024² image end-to-end ≈ 453 s first run.
+
+Three tiers, one prompt — pick the stage that fits your need:
+
+| Tier | Workflow | Behavior |
+|---|---|---|
+| 0. Raw | `flux3_klein_t2i_api.json` (adapter) | prompt goes to FLUX3 exactly as typed |
+| 1. Enhancer | `flux3_klein_t2i_enhanced_api.json` | rule_only: original + quality affixes; auto/strata_local: Strata LLM cinematic rewrite (Chinese-first) |
+| 2. Official upsampler | `flux3_klein_t2i_upsampler_api.json` | BFL qwen3.5-9B rewrites to a full English caption (Apache-2.0) |
+
+You can also chain tier 1 → tier 2: connect the enhancer `positive` output to `TextGenerate.prompt`
+to run both enhancer and the official upsampler.
+
+
 ### Strata LLM (optional)
 
 The LLM path reuses the **BSAI-LLM-Strata** service (OpenAI-compatible, `127.0.0.1:8080`, model `qwen3.8-flash-next`).

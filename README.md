@@ -9,20 +9,23 @@ One-click deployment & tooling for **FLUX 3 Image Klein** (5.6B open weights, Bl
 ```
 BSAI-FLUX3-ComfyUI/
 ├── adapter/                          # Intel XPU / GPU / NPU + NVIDIA adapter pack
-│   ├── README.md                     # adapter guide (hardware tiers, license, TODOs)
+│   ├── BSAI-FLUX3_README.md         # adapter guide (hardware tiers, license, TODOs)
 │   ├── 01_下载FLUX3权重.bat          # weight downloader (hf-mirror + aria2, resumable)
 │   ├── 02_启动FLUX3_5090.bat         # NVIDIA CUDA launcher (port 8193)
 │   ├── 03_启动FLUX3_IntelXPU.bat     # Intel XPU/iGPU launcher (port 8194, Arc-ready)
 │   ├── bsai_flux3_check.py           # model integrity checker (exit 0 = ready)
 │   ├── run_flux3_test.py             # benchmark driver: submit → time → VRAM peak
-│   ├── workflows/flux3_klein_t2i_api.json
+│   ├── workflows/flux3_klein_t2i_api.json            # tier 0: raw prompt
+│   ├── workflows/flux3_klein_t2i_upsampler_api.json  # tier 2: official prompt upsampler
 │   ├── _license/                     # FLUX Kommunity License v1.0 archive
 │   ├── 许可核对报告_FLUX_Kommunity_License.md
 │   └── 实测报告_5090_FLUX3_Klein.md  # real measurements on RTX 5090 Laptop
 └── custom_nodes/
     └── BSAI-FLUX3-Enhancer/          # ComfyUI prompt-enhancer custom node
         ├── README.md / README.zh-CN.md
-        └── workflows/flux3_klein_t2i_enhanced_api.json   # example workflow
+        └── workflows/
+            ├── flux3_klein_t2i_enhanced_api.json    # tier 1: enhancer (rule / Strata LLM)
+            └── flux3_klein_t2i_upsampler_api.json   # tier 2: official upsampler
 ```
 
 ## Quick start
@@ -51,6 +54,21 @@ The "8 GB VRAM" claim holds for the INT8 distilled model under dynamic offloadin
 - Dual engine: local Strata LLM (`127.0.0.1:8080`, via BSAI-LLM-Strata) with automatic rule-engine fallback — never errors.
 - Recipes for FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3; outputs `positive` + `negative`.
 - English UI per ComfyUI custom-node conventions; Chinese support via search aliases + README.zh-CN.md.
+
+## Three prompt tiers (same prompt, three workflows)
+
+| Tier | Workflow | Behavior |
+|---|---|---|
+| 0. Raw | `adapter/workflows/flux3_klein_t2i_api.json` | prompt goes to FLUX3 exactly as typed |
+| 1. Enhancer | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_enhanced_api.json` | rule_only: original + quality affixes; auto / strata_local: Strata LLM cinematic rewrite (Chinese-first) |
+| 2. Official upsampler | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_upsampler_api.json` | ComfyUI native `TextGenerate` + BFL `qwen3.5-9B` upsampler: short request → full English scene caption |
+
+Tier 2 runs on native ComfyUI 0.41 nodes only (no extra plugin): the upsampler checkpoint
+`qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors` (~9.1 GB, `models/text_encoders/`) is
+detected as `QWEN35_9B` and loaded via `CLIPLoader` with `type=flux3`; `TextGenerate` does the
+autoregressive rewrite. Measured on RTX 5090 Laptop 24G: rewrite alone ≈ 249 s first run (mostly cold
+load), full 1024² end-to-end ≈ 453 s first run. The upsampler model is Apache-2.0. You can also chain
+tier 1 → tier 2 by feeding the enhancer `positive` output into `TextGenerate.prompt`.
 
 ## License
 

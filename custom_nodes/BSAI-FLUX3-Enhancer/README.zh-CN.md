@@ -57,6 +57,29 @@
 官方 HF 仓库为 gated，请通过非 gated 镜像下载；再分发前请阅读 FLUX Kommunity License
 （免费商用要求年收入 < 500 万美元）。
 
+### 官方提示词上采样器工作流（第三档）
+
+`workflows/flux3_klein_t2i_upsampler_api.json` —— 在采样器前串联**官方 FLUX3 提示词上采样器**的完整文生图工作流，全部使用 ComfyUI 0.41 原生节点（`TextGenerate`），无需额外插件：
+
+```
+短请求 ──▶ CLIPLoader(上采样器, type=flux3) ──▶ TextGenerate ──▶ 完整场景描述 ──▶ CLIPTextEncode (positive)
+```
+
+- 上采样器权重 `qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors`（~9.1 GB，放 `models/text_encoders/`）会被 ComfyUI 识别为 `QWEN35_9B`，用 `CLIPLoader` + `type=flux3` 加载；`TextGenerate` 把你的短请求扩写成完整英文场景描述（机位、光线、构图）后再生成。
+- 上采样器模型许可为 **Apache-2.0**（与 FLUX Kommunity License 相互独立）。
+- RTX 5090 Laptop 24GB（CUDA）实测：仅扩写首跑 ≈249 秒（大头是冷加载）；1024² 全流程首跑 ≈453 秒。
+
+三档对比，同一句提示词：
+
+| 档位 | 工作流 | 行为 |
+|---|---|---|
+| 0. 原始 | `flux3_klein_t2i_api.json`（适配包） | 提示词原样进 FLUX3 |
+| 1. 增强器 | `flux3_klein_t2i_enhanced_api.json` | rule_only=原文+质量词缀；auto/strata_local=Strata LLM 电影感扩写（中文优先） |
+| 2. 官方上采样器 | `flux3_klein_t2i_upsampler_api.json` | BFL qwen3.5-9B 扩写成完整英文场景描述（Apache-2.0） |
+
+也可以 1→2 串联：把增强器 `positive` 输出接到 `TextGenerate.prompt`，同时跑增强器与官方上采样器。
+
+
 ### Strata LLM（可选）
 
 LLM 路径复用 **BSAI-LLM-Strata** 服务（OpenAI 兼容，`127.0.0.1:8080`，模型 `qwen3.8-flash-next`）。
