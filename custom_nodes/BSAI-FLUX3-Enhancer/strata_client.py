@@ -13,6 +13,14 @@ STRATA_PORT = 8080
 STRATA_BASE_URL = f"http://{STRATA_HOST}:{STRATA_PORT}/v1"
 STRATA_MODEL = "qwen3.8-flash-next"
 
+# New-arch Strata Manager (BSAI-LLM-Strata bsai_model_manager.py):
+# the Manager listens on 8081 and does NOT auto-load the model any more;
+# the engine itself stays on 8080. Loading is triggered via POST /api/switch.
+MANAGER_HOST = "127.0.0.1"
+MANAGER_PORT = 8081
+MANAGER_BASE_URL = f"http://{MANAGER_HOST}:{MANAGER_PORT}"
+MANAGER_QUANT = "Q2_0"   # same quant as run-q2_0.bat
+
 
 def _open_sock(host, port, timeout):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,8 +30,9 @@ def _open_sock(host, port, timeout):
     return s
 
 
-def _blocking_get_json(path, timeout=3.0, headers=None):
-    p = urlparse(STRATA_BASE_URL + path)
+def _blocking_get_url(url, timeout=3.0, headers=None):
+    """Blocking GET against an arbitrary URL (Manager lives outside /v1)."""
+    p = urlparse(url)
     host, port = p.hostname, p.port or 80
     s = _open_sock(host, port, timeout)
     try:
@@ -43,8 +52,9 @@ def _blocking_get_json(path, timeout=3.0, headers=None):
             pass
 
 
-def _blocking_post_json(path, body_bytes, timeout=120.0, headers=None):
-    p = urlparse(STRATA_BASE_URL + path)
+def _blocking_post_url(url, body_bytes, timeout=30.0, headers=None):
+    """Blocking POST against an arbitrary URL (Manager lives outside /v1)."""
+    p = urlparse(url)
     host, port = p.hostname, p.port or 80
     s = _open_sock(host, port, timeout)
     try:
@@ -62,6 +72,40 @@ def _blocking_post_json(path, body_bytes, timeout=120.0, headers=None):
             s.close()
         except Exception:
             pass
+
+
+def manager_running(timeout=2.0):
+    """True when the new-arch Strata Manager (8081) is up.
+
+    A running Manager means a Strata instance exists even if no model is
+    loaded yet — we must never spawn a second launcher for it.
+    """
+    try:
+        status, _ = _blocking_get_url(
+            MANAGER_BASE_URL + "/api/current", timeout=timeout)
+        return status < 400
+    except Exception:
+        return False
+
+
+def manager_current_model(timeout=2.0):
+    """Return the model name the Manager has loaded, or None."""
+    try:
+        status, body = _blocking_get_url(
+            MANAGER_BASE_URL + "/api/current", timeout=timeout)
+        if status >= 400:
+            return None
+        data = json.loads(body)
+        return data.get("current")
+    except Exception:
+        return None
+
+
+def manager_switch_model(model=MANAGER_QUANT, timeout=8.0):
+    """Ask the Manager to load `model` (POST /api/switch). Returns (status, body)."""
+    body = json.dumps({"model": model}).encode("utf-8")
+    return _blocking_post_url(
+        MANAGER_BASE_URL + "/api/switch", body, timeout=timeout)
 
 
 def strata_health(timeout=2.0):

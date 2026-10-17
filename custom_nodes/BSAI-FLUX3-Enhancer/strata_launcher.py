@@ -132,15 +132,79 @@ def _engine_process_running():
         return False
 
 
+def _manager_running():
+    """True when the new-arch Strata Manager (8081) is up."""
+    try:
+        from strata_client import manager_running as _mr
+        return _mr(timeout=2.0)
+    except Exception:
+        return False
+
+
+# Guards against a parallel execution re-triggering a model load (each switch
+# restarts the engine, which would interrupt an in-progress load).
+_LAST_SWITCH = {"t": 0.0}
+_SWITCH_COOLDOWN_S = 60.0
+
+
+def _trigger_model_load(log):
+    """Ask the already-running Manager to load the model (new arch, port 8081).
+
+    Idempotent-ish: skips when the engine is already healthy, when the Manager
+    reports the target model as current (still loading — do not interrupt), or
+    when a switch was issued less than _SWITCH_COOLDOWN_S ago.
+    """
+    try:
+        if _healthy():
+            return
+        from strata_client import (manager_current_model, manager_switch_model,
+                                   MANAGER_QUANT)
+    except Exception:
+        return
+    if not _manager_running():
+        return
+    now = time.time()
+    if now - _LAST_SWITCH["t"] < _SWITCH_COOLDOWN_S:
+        return
+    current = manager_current_model()
+    if current == MANAGER_QUANT:
+        log("[BSAI-FLUX3-Enhancer] Strata manager: %s already loading; waiting (no re-switch)."
+            % current)
+        return
+    try:
+        status, body = manager_switch_model(MANAGER_QUANT)
+        if status < 400:
+            _LAST_SWITCH["t"] = now
+            log("[BSAI-FLUX3-Enhancer] Strata manager: model load triggered (%s)."
+                % MANAGER_QUANT)
+        else:
+            log("[BSAI-FLUX3-Enhancer] Strata manager switch failed: HTTP %s %s"
+                % (status, body[:120]))
+    except Exception as e:
+        log("[BSAI-FLUX3-Enhancer] Strata manager switch error: %s" % e)
+
+
+def _wait_manager(timeout=30.0, log=print):
+    """Wait until the new-arch Manager (8081) is reachable."""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if _manager_running():
+            return True
+        time.sleep(1.0)
+    log("[BSAI-FLUX3-Enhancer] Strata manager not reachable within %ds." % int(timeout))
+    return False
+
+
 def ensure_strata(timeout=_DEFAULT_TIMEOUT, log=print):
     """Ensure the local Strata backend is running and healthy.
 
     Returns one of: "already_running" | "started" | "timeout" |
                     "no_script" | "spawn_error".
 
-    Reuse-first: if any Strata instance is already present — healthy (/models
-    has a model), port listening, or engine process running — we never spawn a
-    second one; we only wait for the existing instance to become healthy.
+    Reuse-first (new arch): if any Strata instance is already present —
+    engine healthy (/models has a model), new-arch Manager up (8081), port
+    8080 listening, or engine process running — we never spawn a second one;
+    we only trigger a model load when needed and wait for readiness.
     """
     if _healthy():
         return "already_running"
@@ -154,10 +218,10 @@ def ensure_strata(timeout=_DEFAULT_TIMEOUT, log=print):
             # A spawn was just issued by a parallel execution; wait for it.
             return _wait_healthy(timeout, log)
 
-        # A Strata instance is already starting/loading (port up or engine up):
-        # wait for it instead of spawning a duplicate.
-        if _port_open() or _engine_process_running():
+        # A Strata instance is already starting/loading: never spawn a duplicate.
+        if _manager_running() or _port_open() or _engine_process_running():
             log("[BSAI-FLUX3-Enhancer] Strata already starting/loading; waiting for it (no second instance).")
+            _trigger_model_load(log)
             return _wait_healthy(timeout, log)
 
         script = _find_script()
@@ -173,6 +237,8 @@ def ensure_strata(timeout=_DEFAULT_TIMEOUT, log=print):
             return "spawn_error"
         log("[BSAI-FLUX3-Enhancer] Strata auto-start: launched %s" % script)
 
+    _wait_manager(log=log)
+    _trigger_model_load(log)
     return _wait_healthy(timeout, log)
 
 
