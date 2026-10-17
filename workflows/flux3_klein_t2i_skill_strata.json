@@ -1,6 +1,8 @@
 {
-  "last_node_id": 15,
-  "last_link_id": 14,
+  "id": "41f4242d-80f6-4ee3-a5eb-113fbf69a268",
+  "revision": 0,
+  "last_node_id": 24,
+  "last_link_id": 31,
   "nodes": [
     {
       "id": 1,
@@ -14,28 +16,31 @@
         120
       ],
       "flags": {},
-      "order": 1,
+      "order": 0,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "value",
-          "type": "STRING",
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "name": "value",
+          "name": "STRING",
           "type": "STRING",
           "links": [
-            1
+            1,
+            23
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "PrimitiveStringMultiline",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         "一个雨夜霓虹灯下，穿着高开叉旗袍的中国年轻女性，湿漉漉的头发，踩着高跟鞋站在积水街道上，赛博朋克城市，低机位，电影感"
-      ]
+      ],
+      "widgets_values_named": {
+        "value": "一个雨夜霓虹灯下，穿着高开叉旗袍的中国年轻女性，湿漉漉的头发，踩着高跟鞋站在积水街道上，赛博朋克城市，低机位，电影感"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 2,
@@ -49,42 +54,44 @@
         220
       ],
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "value",
-          "type": "STRING",
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "name": "value",
+          "name": "STRING",
           "type": "STRING",
           "links": [
-            2
+            18
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "PrimitiveStringMultiline",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         "你是 FLUX3 Image Klein 官方提示词工程师，严格遵循 Black Forest Labs 官方提示词规范：\n1. 用自然语言完整描述画面，按“媒介 → 主体 → 环境 → 光线 → 取景/镜头”组织；把“高级感”写成可见的材质、配色、留白与光线，禁止堆砌 masterpiece / best quality / 8k 等标签。\n2. 写出具体可画的细节：主体外观、动作、相对位置、材质、光影效果；画面中要出现的文字用双引号括起，并说明位置与字体风格。\n3. FLUX3 不支持独立负面提示词，不要输出负面词库；用正向画面描述替代排除（如 an empty street、natural skin texture）。\n4. 需要精确位置或布局时，使用官方 Bounding Box 格式 [top,left,bottom,right]（0-1000 整数），正文用 <id> 标记元素，并附 id/bbox/desc 的 JSON 数组。\n5. 输出一句可直接出图的英文完整提示词；中文说明放在代码块外。不要解释、不要分段编号。"
-      ]
+      ],
+      "widgets_values_named": {
+        "value": "你是 FLUX3 Image Klein 官方提示词工程师，严格遵循 Black Forest Labs 官方提示词规范：\n1. 用自然语言完整描述画面，按“媒介 → 主体 → 环境 → 光线 → 取景/镜头”组织；把“高级感”写成可见的材质、配色、留白与光线，禁止堆砌 masterpiece / best quality / 8k 等标签。\n2. 写出具体可画的细节：主体外观、动作、相对位置、材质、光影效果；画面中要出现的文字用双引号括起，并说明位置与字体风格。\n3. FLUX3 不支持独立负面提示词，不要输出负面词库；用正向画面描述替代排除（如 an empty street、natural skin texture）。\n4. 需要精确位置或布局时，使用官方 Bounding Box 格式 [top,left,bottom,right]（0-1000 整数），正文用 <id> 标记元素，并附 id/bbox/desc 的 JSON 数组。\n5. 输出一句可直接出图的英文完整提示词；中文说明放在代码块外。不要解释、不要分段编号。"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 3,
       "type": "BSAI_FLUX3_PromptEnhancer",
       "pos": [
-        500,
-        0
+        469.91558567603397,
+        2.6874972347209964
       ],
       "size": [
         320,
-        260
+        336
       ],
       "flags": {},
-      "order": 3,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -97,11 +104,12 @@
         },
         {
           "name": "system_prompt",
+          "shape": 7,
           "type": "STRING",
           "widget": {
             "name": "system_prompt"
           },
-          "link": 2
+          "link": 18
         }
       ],
       "outputs": [
@@ -110,7 +118,7 @@
           "type": "STRING",
           "links": [
             3,
-            6
+            28
           ]
         },
         {
@@ -121,7 +129,11 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "BSAI_FLUX3_PromptEnhancer",
+        "aux_id": "xm6018924/BSAI-FLUX3-Enhancer",
+        "ver": "e8db35756fb53b6e40836ed7ed98dbd27d1c4193"
+      },
       "widgets_values": [
         "",
         "flux3_klein",
@@ -130,22 +142,33 @@
         768,
         0.7,
         "",
-        "你是 FLUX3 Image Klein 官方提示词工程师，严格遵循 Black Forest Labs 官方提示词规范：\n1. 用自然语言完整描述画面，按“媒介 → 主体 → 环境 → 光线 → 取景/镜头”组织；把“高级感”写成可见的材质、配色、留白与光线，禁止堆砌 masterpiece / best quality / 8k 等标签。\n2. 写出具体可画的细节：主体外观、动作、相对位置、材质、光影效果；画面中要出现的文字用双引号括起，并说明位置与字体风格。\n3. FLUX3 不支持独立负面提示词，不要输出负面词库；用正向画面描述替代排除（如 an empty street、natural skin texture）。\n4. 需要精确位置或布局时，使用官方 Bounding Box 格式 [top,left,bottom,right]（0-1000 整数），正文用 <id> 标记元素，并附 id/bbox/desc 的 JSON 数组。\n5. 输出一句可直接出图的英文完整提示词；中文说明放在代码块外。不要解释、不要分段编号。"
-      ]
+        ""
+      ],
+      "widgets_values_named": {
+        "raw_prompt": "",
+        "target_model": "flux3_klein",
+        "engine": "strata_local",
+        "language": "zh",
+        "max_tokens": 768,
+        "temperature": 0.7,
+        "negative_hint": "",
+        "system_prompt": ""
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 4,
       "type": "ShowText|pysssss",
       "pos": [
-        880,
-        0
+        855.0280477292451,
+        0.2702029372165221
       ],
       "size": [
         400,
         120
       ],
       "flags": {},
-      "order": 4,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -156,27 +179,32 @@
       ],
       "outputs": [
         {
-          "name": "text",
+          "name": "STRING",
+          "shape": 6,
           "type": "STRING",
           "links": []
         }
       ],
-      "properties": {},
-      "widgets_values": []
+      "properties": {
+        "Node name for S&R": "ShowText|pysssss",
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "609f3afaa74b2f88ef9ce8d939626065e3247469"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 5,
       "type": "ShowText|pysssss",
       "pos": [
-        880,
-        150
+        850.460506236033,
+        172.78573306755698
       ],
       "size": [
         400,
         120
       ],
       "flags": {},
-      "order": 5,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -187,65 +215,80 @@
       ],
       "outputs": [
         {
-          "name": "text",
+          "name": "STRING",
+          "shape": 6,
           "type": "STRING",
           "links": []
         }
       ],
-      "properties": {},
-      "widgets_values": []
+      "properties": {
+        "Node name for S&R": "ShowText|pysssss",
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "609f3afaa74b2f88ef9ce8d939626065e3247469"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 6,
       "type": "CLIPLoader",
       "pos": [
-        0,
-        420
+        -1179.650823606985,
+        368.26371307842044
       ],
       "size": [
-        260,
-        90
+        423.2889038085938,
+        106
       ],
       "flags": {},
-      "order": 6,
-      "mode": 0,
+      "order": 2,
+      "mode": 4,
       "inputs": [],
       "outputs": [
         {
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            5,
-            7
+            24,
+            25
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "CLIPLoader",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         "qwen3vl_4b_int8_convrot.safetensors",
         "flux3",
         "default"
-      ]
+      ],
+      "widgets_values_named": {
+        "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+        "type": "flux3",
+        "device": "default"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 7,
       "type": "CLIPTextEncode",
       "pos": [
-        320,
-        430
+        1294.8443176269525,
+        0.23974328775636877
       ],
       "size": [
         260,
         120
       ],
       "flags": {},
-      "order": 7,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 5
+          "link": 24
         },
         {
           "name": "text",
@@ -253,7 +296,7 @@
           "widget": {
             "name": "text"
           },
-          "link": 6
+          "link": 29
         }
       ],
       "outputs": [
@@ -265,30 +308,38 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         ""
-      ]
+      ],
+      "widgets_values_named": {
+        "text": ""
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 8,
       "type": "CLIPTextEncode",
       "pos": [
-        320,
-        580
+        1298.7556030273438,
+        172.17776184082027
       ],
       "size": [
         260,
         120
       ],
       "flags": {},
-      "order": 8,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 7
+          "link": 25
         }
       ],
       "outputs": [
@@ -300,24 +351,32 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         ""
-      ]
+      ],
+      "widgets_values_named": {
+        "text": ""
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 9,
       "type": "UNETLoader",
       "pos": [
-        0,
-        560
+        4.450830001419386,
+        583.4555449536912
       ],
       "size": [
-        300,
-        90
+        424.17780761718757,
+        82
       ],
       "flags": {},
-      "order": 9,
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -329,25 +388,34 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "UNETLoader",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         "Flux3\\flux3_image_klein_int8_convrot.safetensors",
         "default"
-      ]
+      ],
+      "widgets_values_named": {
+        "unet_name": "Flux3\\flux3_image_klein_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 10,
       "type": "VAELoader",
       "pos": [
-        0,
-        700
+        1.2142415108897953,
+        715.9776455082127
       ],
       "size": [
-        260,
-        70
+        425.67272727272746,
+        58
       ],
       "flags": {},
-      "order": 10,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -359,17 +427,25 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         "flux2-vae.safetensors"
-      ]
+      ],
+      "widgets_values_named": {
+        "vae_name": "flux2-vae.safetensors"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 11,
       "type": "EmptyLatentImage",
       "pos": [
-        0,
-        820
+        869.9073470294563,
+        390.29563574072586
       ],
       "size": [
         220,
@@ -385,7 +461,7 @@
           "widget": {
             "name": "width"
           },
-          "link": null
+          "link": 15
         },
         {
           "name": "height",
@@ -393,15 +469,7 @@
           "widget": {
             "name": "height"
           },
-          "link": null
-        },
-        {
-          "name": "batch_size",
-          "type": "INT",
-          "widget": {
-            "name": "batch_size"
-          },
-          "link": null
+          "link": 16
         }
       ],
       "outputs": [
@@ -413,26 +481,36 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         1024,
         1024,
         1
-      ]
+      ],
+      "widgets_values_named": {
+        "width": 1024,
+        "height": 1024,
+        "batch_size": 1
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 12,
       "type": "KSampler",
       "pos": [
-        640,
-        430
+        1612.9675720004896,
+        -0.8834628936357133
       ],
       "size": [
         300,
-        170
+        262
       ],
       "flags": {},
-      "order": 12,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
@@ -465,30 +543,44 @@
           ]
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "KSampler",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         121698113949078,
         "randomize",
         16,
-        1.0,
+        1,
         "euler",
         "simple",
-        1.0
-      ]
+        1
+      ],
+      "widgets_values_named": {
+        "seed": 121698113949078,
+        "control_after_generate": "randomize",
+        "steps": 16,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 13,
       "type": "VAEDecode",
       "pos": [
-        640,
-        660
+        1948.6758758584906,
+        -0.5660644151319861
       ],
       "size": [
         220,
         90
       ],
       "flags": {},
-      "order": 13,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
@@ -511,22 +603,26 @@
           ]
         }
       ],
-      "properties": {},
-      "widgets_values": []
+      "properties": {
+        "Node name for S&R": "VAEDecode",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 14,
       "type": "SaveImage",
       "pos": [
-        900,
-        660
+        2218.9669628839083,
+        -0.8462192954555837
       ],
       "size": [
-        300,
-        200
+        970,
+        620
       ],
       "flags": {},
-      "order": 14,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
@@ -542,51 +638,439 @@
           "links": []
         }
       ],
-      "properties": {},
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
       "widgets_values": [
         "BSAI_FLUX3_Skill_Strata"
-      ]
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "BSAI_FLUX3_Skill_Strata"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     },
     {
       "id": 15,
       "type": "Note",
       "pos": [
-        0,
-        990
+        -526.5921107788084,
+        -4.781338256835943
       ],
       "size": [
         480,
         260
       ],
       "flags": {},
-      "order": 15,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {},
       "widgets_values": [
         "链路：用户中文想法 → BSAI 增强器（Strata 引擎 + 官方 SKILL 方法论）→ FLUX3 Klein 出图\n\n· engine = strata_local：若 Strata 后台未运行，节点会自动拉起并等待就绪；起不来才降级规则引擎\n· system_prompt 节点 = 官方 Comfyui-Flux3-promt-Skill（flux3-prompting）方法论浓缩，可自行编辑\n· 按 SKILL 规范：不写负面提示词（negative 用空文本）、不堆标签、自然语言完整画面\n· 降级路径（SKILL 官方允许）：Strata 离线时自动走规则引擎；跳过官方 PUP 属明确说明的降级\n· 可选串联官方 PUP：把 positive 接进 3tier 工作流 upsampler 档（qwen3.5_9b TextGenerate）\n· 采样：官方重置版建议 4–16 steps、CFG≈1；本工作流默认 16 steps / cfg 1"
-      ]
+      ],
+      "widgets_values_named": {
+        "text": "链路：用户中文想法 → BSAI 增强器（Strata 引擎 + 官方 SKILL 方法论）→ FLUX3 Klein 出图\n\n· engine = strata_local：若 Strata 后台未运行，节点会自动拉起并等待就绪；起不来才降级规则引擎\n· system_prompt 节点 = 官方 Comfyui-Flux3-promt-Skill（flux3-prompting）方法论浓缩，可自行编辑\n· 按 SKILL 规范：不写负面提示词（negative 用空文本）、不堆标签、自然语言完整画面\n· 降级路径（SKILL 官方允许）：Strata 离线时自动走规则引擎；跳过官方 PUP 属明确说明的降级\n· 可选串联官方 PUP：把 positive 接进 3tier 工作流 upsampler 档（qwen3.5_9b TextGenerate）\n· 采样：官方重置版建议 4–16 steps、CFG≈1；本工作流默认 16 steps / cfg 1"
+      },
+      "color": "#432",
+      "bgcolor": "rgba(0,0,0,0)"
+    },
+    {
+      "id": 16,
+      "type": "ResolutionSelector",
+      "pos": [
+        479.0025500985818,
+        387.276621673236
+      ],
+      "size": [
+        310,
+        150
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ResolutionSelector",
+        "cnr_id": "comfy-core",
+        "ver": "0.41.0"
+      },
+      "widgets_values": [
+        "16:9 (Widescreen)",
+        1,
+        16
+      ],
+      "widgets_values_named": {
+        "aspect_ratio": "16:9 (Widescreen)",
+        "megapixels": 1,
+        "multiple": 16
+      },
+      "bgcolor": "rgba(0,0,0,0)"
+    },
+    {
+      "id": 17,
+      "type": "CLIPLoader",
+      "pos": [
+        1.0607018775013475,
+        425.35273845365776
+      ],
+      "size": [
+        418.6455269555529,
+        106
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader",
+        "models": [
+          {
+            "name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+            "url": "https://huggingface.co/black-forest-labs/flux-3-image-klein-comfy/resolve/main/text_encoders/qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+            "directory": "text_encoders"
+          }
+        ]
+      },
+      "widgets_values": [
+        "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+        "flux3",
+        "default"
+      ],
+      "widgets_values_named": {
+        "clip_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+        "type": "flux3",
+        "device": "default"
+      }
+    },
+    {
+      "id": 18,
+      "type": "PrimitiveStringMultiline",
+      "pos": [
+        16.121050723936897,
+        883.9900639541455
+      ],
+      "size": [
+        512.7910290527343,
+        582.7644116210938
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "Text (System prompt)",
+      "properties": {
+        "Node name for S&R": "PrimitiveStringMultiline"
+      },
+      "widgets_values": [
+        "You are the prompt upsampler of a text-to-image model. Expand the user's short request into ONE detailed, self-contained caption: the exact text the image model receives. Output only the caption, with no greetings, explanations, refusals, questions, Markdown, headings, JSON, coordinates, ids or angle-bracket tokens, and no quotes around it. If the input is not clearly an image request, caption a visualization of its concept. The request may begin with a \"TARGET CANVAS: W:H\" line: compose for that canvas (wide spreads content sideways, tall stacks it) and never mention the ratio or the canvas.\n\nFidelity and planning: keep every explicit subject, attribute, count, spatial constraint, style cue and piece of wording; never contradict, substitute, drop or narrow the request, and keep an abstract concept abstract. Decide everything left open as ONE concrete, consistent plan; never offer alternatives or hedge. Never re-express a stated constraint through another mechanism; add camera optics (depth of field, bokeh, blur) only when asked for or implied. Without a stated style, plan an actual photograph and open with the medium convention (\"Full-color outdoor photograph, ...\", \"Full-color indoor photograph, ...\", \"Studio photograph, ...\", \"Close-up photograph, ...\"); keep \"Photorealistic\" for renders, and turn \"photorealistic\" or \"realistic\" requests for photos into the photograph convention. Give a photograph a few ordinary, non-ideal specifics drawn from the scene's own objects instead of the stock-photo ideal. Do not invent names, brands, logos or celebrities; keep user-named ones. A long request keeps its content but not its wording: drop appraisal and sales vocabulary, turn moods into observable physical facts, and add only new concrete content with positions. Time of day is lighting, not rendered text.\n\nCaption format: one continuous prose block in the generative voice, never \"this image shows\", \"we can see\" or \"is visible\". Lead with medium and style, then scene, lighting and camera, then the subjects with concrete colors, materials and state. Every person in focus gets an observable profile: ethnicity, gender, age range, skin tone (\"fair skin\", \"brown skin\"), hair and clothing. Make the layout reconstructable from words: frame-relative positions (frame-left, frame-right, upper, lower, foreground, midground, background), sentence-initial anchors (\"On the left, ...\", \"In the background, ...\"), relations (holds, faces, behind) and a consistent order; describe up to about ten instances one by one, beyond that give the exact count and arrangement. Out-of-focus or distant planes are shapes, colors and silhouettes, never identities or readable text, and the background takes about a sixth of the caption. Be definite: no hedging adverbs, no quality or emotion judgments, no closing sentence about mood; state negations as what is present. Rendered text: transcribe every wording verbatim inside double quotes in its original language and script, keep the line breaks of multi-line text, and give its typography, color and placement; author concrete, domain-correct wording when the request needs text it does not supply, and name canonical structures (calendar, keyboard, periodic table) exactly with their full layout. All prose is English; only quoted text keeps its language. Typical length is 100 to 350 words, more for complex scenes.\n\nOutput only the caption.\n"
+      ],
+      "widgets_values_named": {
+        "value": "You are the prompt upsampler of a text-to-image model. Expand the user's short request into ONE detailed, self-contained caption: the exact text the image model receives. Output only the caption, with no greetings, explanations, refusals, questions, Markdown, headings, JSON, coordinates, ids or angle-bracket tokens, and no quotes around it. If the input is not clearly an image request, caption a visualization of its concept. The request may begin with a \"TARGET CANVAS: W:H\" line: compose for that canvas (wide spreads content sideways, tall stacks it) and never mention the ratio or the canvas.\n\nFidelity and planning: keep every explicit subject, attribute, count, spatial constraint, style cue and piece of wording; never contradict, substitute, drop or narrow the request, and keep an abstract concept abstract. Decide everything left open as ONE concrete, consistent plan; never offer alternatives or hedge. Never re-express a stated constraint through another mechanism; add camera optics (depth of field, bokeh, blur) only when asked for or implied. Without a stated style, plan an actual photograph and open with the medium convention (\"Full-color outdoor photograph, ...\", \"Full-color indoor photograph, ...\", \"Studio photograph, ...\", \"Close-up photograph, ...\"); keep \"Photorealistic\" for renders, and turn \"photorealistic\" or \"realistic\" requests for photos into the photograph convention. Give a photograph a few ordinary, non-ideal specifics drawn from the scene's own objects instead of the stock-photo ideal. Do not invent names, brands, logos or celebrities; keep user-named ones. A long request keeps its content but not its wording: drop appraisal and sales vocabulary, turn moods into observable physical facts, and add only new concrete content with positions. Time of day is lighting, not rendered text.\n\nCaption format: one continuous prose block in the generative voice, never \"this image shows\", \"we can see\" or \"is visible\". Lead with medium and style, then scene, lighting and camera, then the subjects with concrete colors, materials and state. Every person in focus gets an observable profile: ethnicity, gender, age range, skin tone (\"fair skin\", \"brown skin\"), hair and clothing. Make the layout reconstructable from words: frame-relative positions (frame-left, frame-right, upper, lower, foreground, midground, background), sentence-initial anchors (\"On the left, ...\", \"In the background, ...\"), relations (holds, faces, behind) and a consistent order; describe up to about ten instances one by one, beyond that give the exact count and arrangement. Out-of-focus or distant planes are shapes, colors and silhouettes, never identities or readable text, and the background takes about a sixth of the caption. Be definite: no hedging adverbs, no quality or emotion judgments, no closing sentence about mood; state negations as what is present. Rendered text: transcribe every wording verbatim inside double quotes in its original language and script, keep the line breaks of multi-line text, and give its typography, color and placement; author concrete, domain-correct wording when the request needs text it does not supply, and name canonical structures (calendar, keyboard, periodic table) exactly with their full layout. All prose is English; only quoted text keeps its language. Typical length is 100 to 350 words, more for complex scenes.\n\nOutput only the caption.\n"
+      }
+    },
+    {
+      "id": 19,
+      "type": "TextGenerate",
+      "pos": [
+        562.5717309302364,
+        882.5247034656097
+      ],
+      "size": [
+        400,
+        460
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 19
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "video",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": null
+        },
+        {
+          "name": "system_prompt",
+          "shape": 7,
+          "type": "STRING",
+          "link": 20
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "generated_text",
+          "type": "STRING",
+          "links": [
+            27,
+            31
+          ]
+        },
+        {
+          "name": "thinking",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TextGenerate"
+      },
+      "widgets_values": [
+        "",
+        3584,
+        "on",
+        1,
+        1,
+        0.95,
+        0,
+        1,
+        0,
+        1.5,
+        false,
+        true,
+        "off"
+      ],
+      "widgets_values_named": {
+        "prompt": "",
+        "max_length": 3584,
+        "sampling_mode": "on",
+        "sampling_mode.temperature": 1,
+        "sampling_mode.top_k": 1,
+        "sampling_mode.top_p": 0.95,
+        "sampling_mode.min_p": 0,
+        "sampling_mode.repetition_penalty": 1,
+        "sampling_mode.seed": 0,
+        "sampling_mode.presence_penalty": 1.5,
+        "thinking": false,
+        "use_default_template": true,
+        "mtp": "off"
+      }
+    },
+    {
+      "id": 20,
+      "type": "PreviewAny",
+      "pos": [
+        1319.3204552239347,
+        884.1835626304018
+      ],
+      "size": [
+        352.6713313239575,
+        572.1437362797005
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 21,
+      "type": "ComfySwitchNode",
+      "pos": [
+        1013.4617546582831,
+        886.487274148998
+      ],
+      "size": [
+        270,
+        80
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "on_false",
+          "shape": 7,
+          "type": "STRING",
+          "link": 27
+        },
+        {
+          "name": "on_true",
+          "shape": 7,
+          "type": "STRING",
+          "link": 28
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "STRING",
+          "links": [
+            21,
+            29
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        true
+      ],
+      "widgets_values_named": {
+        "switch": true
+      }
+    },
+    {
+      "id": 23,
+      "type": "easy boolean",
+      "pos": [
+        -473.6185150659418,
+        362.80235639800924
+      ],
+      "size": [
+        377.46076974816003,
+        58
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "boolean",
+          "type": "BOOLEAN",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "easy boolean"
+      },
+      "widgets_values": [
+        true
+      ],
+      "widgets_values_named": {
+        "value": true
+      }
+    },
+    {
+      "id": 24,
+      "type": "ShowText|pysssss",
+      "pos": [
+        1007.9874386770233,
+        1020.1396200312877
+      ],
+      "size": [
+        273.7790217353024,
+        439.89309538763155
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ShowText|pysssss",
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "609f3afaa74b2f88ef9ce8d939626065e3247469"
+      },
+      "bgcolor": "rgba(0,0,0,0)"
     }
   ],
   "links": [
     [
-      1,
-      1,
-      0,
-      3,
-      0,
-      "STRING"
-    ],
-    [
-      2,
-      2,
-      0,
-      3,
-      7,
-      "STRING"
-    ],
-    [
       3,
       3,
       0,
@@ -601,30 +1085,6 @@
       5,
       0,
       "STRING"
-    ],
-    [
-      5,
-      6,
-      0,
-      7,
-      0,
-      "CLIP"
-    ],
-    [
-      6,
-      3,
-      0,
-      7,
-      1,
-      "STRING"
-    ],
-    [
-      7,
-      6,
-      0,
-      8,
-      0,
-      "CLIP"
     ],
     [
       8,
@@ -681,10 +1141,178 @@
       14,
       0,
       "IMAGE"
+    ],
+    [
+      1,
+      1,
+      0,
+      3,
+      0,
+      "STRING"
+    ],
+    [
+      15,
+      16,
+      0,
+      11,
+      0,
+      "INT"
+    ],
+    [
+      16,
+      16,
+      1,
+      11,
+      1,
+      "INT"
+    ],
+    [
+      18,
+      2,
+      0,
+      3,
+      1,
+      "STRING"
+    ],
+    [
+      19,
+      17,
+      0,
+      19,
+      0,
+      "CLIP"
+    ],
+    [
+      20,
+      18,
+      0,
+      19,
+      4,
+      "STRING"
+    ],
+    [
+      21,
+      21,
+      0,
+      20,
+      0,
+      "*"
+    ],
+    [
+      23,
+      1,
+      0,
+      19,
+      5,
+      "STRING"
+    ],
+    [
+      24,
+      6,
+      0,
+      7,
+      0,
+      "CLIP"
+    ],
+    [
+      25,
+      6,
+      0,
+      8,
+      0,
+      "CLIP"
+    ],
+    [
+      27,
+      19,
+      0,
+      21,
+      0,
+      "STRING"
+    ],
+    [
+      28,
+      3,
+      0,
+      21,
+      1,
+      "STRING"
+    ],
+    [
+      29,
+      21,
+      0,
+      7,
+      1,
+      "STRING"
+    ],
+    [
+      30,
+      23,
+      0,
+      21,
+      2,
+      "BOOLEAN"
+    ],
+    [
+      31,
+      19,
+      0,
+      24,
+      0,
+      "STRING"
     ]
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Prompt Enhancer",
+      "bounding": [
+        2.5717309302357063,
+        803.1749979751421,
+        1685.71419502397,
+        679.3642949274235
+      ],
+      "color": "#444",
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "BSAI-Strata增强开关 ：true",
+      "bounding": [
+        -514.3450796207538,
+        279.9967320908939,
+        466.5459115399858,
+        172.95832967467015
+      ],
+      "color": "#b58b2a",
+      "flags": {}
+    }
+  ],
   "config": {},
-  "extra": {},
-  "version": 0.4
+  "extra": {
+    "ds": {
+      "scale": 0.9090909090909091,
+      "offset": [
+        307.5891021539914,
+        -287.9714588498008
+      ]
+    },
+    "qgn_navigation_groups": [],
+    "qgn_locked": false,
+    "frontendVersion": "1.55.17",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "extensions": {
+    "seed_widgets": {
+      "12": 0
+    }
+  },
+  "version": 0.4,
+  "seed_widgets": {
+    "12": 0
+  }
 }
