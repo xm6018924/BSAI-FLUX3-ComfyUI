@@ -172,6 +172,7 @@ class BSAI_FLUX3_PromptEnhancer:
             },
             "optional": {
                 "negative_hint": ("STRING", {"default": "", "multiline": True}),
+                "system_prompt": ("STRING", {"default": "", "multiline": True}),
             },
         }
 
@@ -181,7 +182,8 @@ class BSAI_FLUX3_PromptEnhancer:
     CATEGORY = "BSAI/FLUX3"
 
     def execute(self, raw_prompt, target_model="flux3_klein", engine="auto",
-                language="zh", max_tokens=512, temperature=0.7, negative_hint=""):
+                language="zh", max_tokens=512, temperature=0.7, negative_hint="",
+                system_prompt=""):
         pos = None
         neg = None
         engine_used = "rule_only"
@@ -193,8 +195,11 @@ class BSAI_FLUX3_PromptEnhancer:
                     # Strata selected but offline → auto-start the backend and wait.
                     ensure_strata(log=print)
                 if strata_health():
+                    # Custom system prompt (e.g. official FLUX3 prompting SKILL methodology)
+                    # overrides the built-in recipe prompt when provided.
+                    sys_prompt = (system_prompt or "").strip() or _build_system(target_model, language)
                     messages = [
-                        {"role": "system", "content": _build_system(target_model, language)},
+                        {"role": "system", "content": sys_prompt},
                         {"role": "user", "content": f"用户的粗略想法：{raw_prompt}"},
                     ]
                     pos = strata_chat(messages, max_tokens=max_tokens, temperature=temperature)

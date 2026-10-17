@@ -8,7 +8,7 @@ How the BSAI FLUX3 ComfyUI Pack, the community upsampler plugin, and the officia
 
 | Piece | Role | Scope |
 |---|---|---|
-| **BSAI-FLUX3-Enhancer** (this repo) | Enhancement & orchestration layer | Chinese-first prompt enhancement (rule / Strata local LLM), 3-tier prompt routing, Strata auto-start with duplicate protection, Intel XPU / GPU / NPU + one-click deployment |
+| **BSAI-FLUX3-ComfyUI** (this repo, root = enhancer node) | Enhancement & orchestration layer | Chinese-first prompt enhancement (rule / Strata local LLM), 3-tier prompt routing, Strata auto-start with duplicate protection, Intel XPU / GPU / NPU + one-click deployment |
 | **kkget/ComfyUI-Flux3-Prompt-Upsampler** | Official feature implementation | Wraps the official BFL `qwen3.5_9b` upsampler as a node: up to **10 reference images**, **bounding-box editing** (edit in place / move / resize / remove / add), automatic t2i ↔ i2i system prompts, official reference-image preprocessing |
 | **Official reset/optimized release** (Quark netdisk, mirrored locally in `G:\flux3 image(1)`) | Shared new base | New distilled models (bf16 / int8 / base-int8), native FLUX.3 subgraph workflows, **4–16 steps** instead of 50 |
 | **kkget/Comfyui-Flux3-promt-Skill** | Prompt methodology (Agent skill, not a node) | BFL-doc-based prompting patterns: t2i, 3-view, character consistency, multi-image compositing, bbox layout; referenced for methodology, not copied (repo has no LICENSE file) |
@@ -27,7 +27,7 @@ How the BSAI FLUX3 ComfyUI Pack, the community upsampler plugin, and the officia
 
 ## 3. Prerequisites
 
-1. **BSAI pack** — clone/copy `custom_nodes/BSAI-FLUX3-Enhancer/` into `ComfyUI/custom_nodes/`, restart ComfyUI.
+1. **BSAI pack** — clone this whole repo into `ComfyUI/custom_nodes/` (repo root = plugin), restart ComfyUI.
 2. **KK plugin** — clone `https://github.com/kkget/ComfyUI-Flux3-Prompt-Upsampler` into `ComfyUI/custom_nodes/`, restart ComfyUI (Apache-2.0, no extra pip deps). The node is `FLUX.3 Prompt Upsampler`, category `FLUX.3/text`.
 3. **Models** (already on this machine for the base flows; new reset weights are downloading):
 
@@ -40,7 +40,7 @@ How the BSAI FLUX3 ComfyUI Pack, the community upsampler plugin, and the officia
 
 ## 4. Integration workflow (BSAI × KK)
 
-`custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_edit_bsai_x_kk.json`:
+`workflows/flux3_klein_edit_bsai_x_kk.json`:
 
 ```
 Chinese edit request

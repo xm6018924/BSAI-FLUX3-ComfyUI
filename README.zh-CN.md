@@ -23,13 +23,13 @@ BSAI-FLUX3-ComfyUI/
 ├── docs/                             # 生态与集成指南
 │   ├── FLUX3_ECOSYSTEM.md            # BSAI x KK x 官方重置版（英文）
 │   └── FLUX3_ECOSYSTEM.zh-CN.md      # 同上（中文）
-└── custom_nodes/
-    └── BSAI-FLUX3-Enhancer/          # ComfyUI 提示词增强器节点
-        ├── README.md / README.zh-CN.md
-        └── workflows/
-            ├── flux3_klein_t2i_enhanced_api.json    # 第1档：增强器（rule / Strata LLM）
-            ├── flux3_klein_t2i_upsampler_api.json   # 第2档：官方上采样器
-            └── flux3_klein_edit_bsai_x_kk.json      # BSAI x KK 协同（图像编辑）
+├── workflows/                       # 示例工作流（ComfyUI 中导入使用）
+│   ├── flux3_klein_t2i_enhanced_api.json    # 第1档：增强器（rule / Strata LLM）
+│   ├── flux3_klein_t2i_upsampler_api.json   # 第2档：官方上采样器
+│   └── flux3_klein_edit_bsai_x_kk.json      # BSAI x KK 协同（图像编辑）
+└── __init__.py / enhancer.py / router.py / strata_*.py / test_enhancer.py
+                                     # 仓库根即 ComfyUI 插件本体
+                                     # （分类 BSAI/FLUX3，节点 "BSAI FLUX3 Prompt Enhancer"）
 ```
 
 ## 快速开始
@@ -38,7 +38,7 @@ BSAI-FLUX3-ComfyUI/
 2. 启动：
    - NVIDIA：`adapter/02_启动FLUX3_5090.bat` → http://127.0.0.1:8193
    - Intel Arc/核显：`adapter/03_启动FLUX3_IntelXPU.bat` → http://127.0.0.1:8194
-3. 安装增强器：把 `custom_nodes/BSAI-FLUX3-Enhancer/` 复制到 `ComfyUI/custom_nodes/`，重启后导入示例工作流即可。
+3. 安装增强器：将本仓库整体 clone 到 `ComfyUI/custom_nodes/`（仓库根即插件，根目录含 `__init__.py`），重启 ComfyUI 后从 `workflows/` 导入示例工作流即可。
 
 ## 本机实测（RTX 5090 Laptop 24G，蒸馏版 INT8，1024² / 16 步）
 
@@ -64,9 +64,9 @@ BSAI-FLUX3-ComfyUI/
 | 档位 | 工作流 | 行为 |
 |---|---|---|
 | 0. 原始 | `adapter/workflows/flux3_klein_t2i_api.json` | 提示词原样进 FLUX3 |
-| 1. 增强器 | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_enhanced_api.json` | rule_only=原文+质量词缀；auto/strata_local=Strata LLM 电影感扩写（中文优先） |
-| 2. 官方上采样器 | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_upsampler_api.json` | ComfyUI 原生 `TextGenerate` + BFL `qwen3.5-9B`：短请求→完整英文场景描述 |
-| 3. 图像编辑（BSAI × KK） | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_edit_bsai_x_kk.json` | 中文增强 → KK 官方 9B 扩写 → 参考图编辑（需安装 kkget 插件） |
+| 1. 增强器 | `workflows/flux3_klein_t2i_enhanced_api.json` | rule_only=原文+质量词缀；auto/strata_local=Strata LLM 电影感扩写（中文优先） |
+| 2. 官方上采样器 | `workflows/flux3_klein_t2i_upsampler_api.json` | ComfyUI 原生 `TextGenerate` + BFL `qwen3.5-9B`：短请求→完整英文场景描述 |
+| 3. 图像编辑（BSAI × KK） | `workflows/flux3_klein_edit_bsai_x_kk.json` | 中文增强 → KK 官方 9B 扩写 → 参考图编辑（需安装 kkget 插件） |
 
 第 2 档只用 ComfyUI 0.41 原生节点（无需额外插件）：上采样器权重
 `qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors`（~9.1GB，`models/text_encoders/`）

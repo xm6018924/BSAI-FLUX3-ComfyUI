@@ -23,13 +23,13 @@ BSAI-FLUX3-ComfyUI/
 ├── docs/                             # ecosystem & integration guide
 │   ├── FLUX3_ECOSYSTEM.md            # BSAI x KK x official reset (EN)
 │   └── FLUX3_ECOSYSTEM.zh-CN.md      # 同上（中文）
-└── custom_nodes/
-    └── BSAI-FLUX3-Enhancer/          # ComfyUI prompt-enhancer custom node
-        ├── README.md / README.zh-CN.md
-        └── workflows/
-            ├── flux3_klein_t2i_enhanced_api.json    # tier 1: enhancer (rule / Strata LLM)
-            ├── flux3_klein_t2i_upsampler_api.json   # tier 2: official upsampler
-            └── flux3_klein_edit_bsai_x_kk.json      # BSAI x KK integration (image edit)
+├── workflows/                       # example workflows (import in ComfyUI)
+│   ├── flux3_klein_t2i_enhanced_api.json    # tier 1: enhancer (rule / Strata LLM)
+│   ├── flux3_klein_t2i_upsampler_api.json   # tier 2: official upsampler
+│   └── flux3_klein_edit_bsai_x_kk.json      # BSAI x KK integration (image edit)
+└── __init__.py / enhancer.py / router.py / strata_*.py / test_enhancer.py
+                                     # repo root IS the ComfyUI custom node
+                                     # (category BSAI/FLUX3, node "BSAI FLUX3 Prompt Enhancer")
 ```
 
 ## Quick start
@@ -39,7 +39,7 @@ BSAI-FLUX3-ComfyUI/
 2. Launch:
    - NVIDIA: `adapter/02_启动FLUX3_5090.bat` → http://127.0.0.1:8193
    - Intel Arc / iGPU: `adapter/03_启动FLUX3_IntelXPU.bat` → http://127.0.0.1:8194
-3. Install the enhancer node: copy `custom_nodes/BSAI-FLUX3-Enhancer/` into `ComfyUI/custom_nodes/`, restart ComfyUI, then import the example workflow.
+3. Install the enhancer node: clone this whole repo into `ComfyUI/custom_nodes/` (the repo root **is** the plugin: `__init__.py` sits at the root). Restart ComfyUI, then import an example workflow from `workflows/`.
 
 ## Measured results (RTX 5090 Laptop 24G, distilled INT8, 1024² / 16 steps)
 
@@ -65,9 +65,9 @@ The "8 GB VRAM" claim holds for the INT8 distilled model under dynamic offloadin
 | Tier | Workflow | Behavior |
 |---|---|---|
 | 0. Raw | `adapter/workflows/flux3_klein_t2i_api.json` | prompt goes to FLUX3 exactly as typed |
-| 1. Enhancer | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_enhanced_api.json` | rule_only: original + quality affixes; auto / strata_local: Strata LLM cinematic rewrite (Chinese-first) |
-| 2. Official upsampler | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_upsampler_api.json` | ComfyUI native `TextGenerate` + BFL `qwen3.5-9B` upsampler: short request → full English scene caption |
-| 3. Edit (BSAI × KK) | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_edit_bsai_x_kk.json` | Chinese-first enhancement → KK official 9B upsampler → reference-image editing (requires the kkget plugin) |
+| 1. Enhancer | `workflows/flux3_klein_t2i_enhanced_api.json` | rule_only: original + quality affixes; auto / strata_local: Strata LLM cinematic rewrite (Chinese-first) |
+| 2. Official upsampler | `workflows/flux3_klein_t2i_upsampler_api.json` | ComfyUI native `TextGenerate` + BFL `qwen3.5-9B` upsampler: short request → full English scene caption |
+| 3. Edit (BSAI × KK) | `workflows/flux3_klein_edit_bsai_x_kk.json` | Chinese-first enhancement → KK official 9B upsampler → reference-image editing (requires the kkget plugin) |
 
 Tier 2 runs on native ComfyUI 0.41 nodes only (no extra plugin): the upsampler checkpoint
 `qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors` (~9.1 GB, `models/text_encoders/`) is

@@ -8,7 +8,7 @@
 
 | 组件 | 角色 | 职责范围 |
 |---|---|---|
-| **BSAI-FLUX3-Enhancer**（本仓库） | 增强与编排层 | 中文优先提示词增强（规则 / Strata 本地 LLM 双引擎）、三档提示词路由、Strata 自动拉起（防重复实例）、Intel XPU / GPU / NPU 适配与一键部署 |
+| **BSAI-FLUX3-ComfyUI**（本仓库，根目录即增强器插件） | 增强与编排层 | 中文优先提示词增强（规则 / Strata 本地 LLM 双引擎）、三档提示词路由、Strata 自动拉起（防重复实例）、Intel XPU / GPU / NPU 适配与一键部署 |
 | **kkget/ComfyUI-Flux3-Prompt-Upsampler** | 官方能力实现 | 把官方 BFL `qwen3.5_9b` 上采样器封装为节点：至多 **10 张参考图**、**框坐标（bbox）编辑**（原位 / 移动 / 缩放 / 删除 / 新增）、t2i ↔ i2i 系统提示词自动切换、官方参考图预处理策略 |
 | **官方重置大幅优化版**（夸克网盘，本地镜像 `G:\flux3 image(1)`） | 共同新基底 | 新蒸馏模型（bf16 / int8 / base-int8）、原生 FLUX.3 子图工作流、**4–16 步**（替代原 50 步） |
 | **kkget/Comfyui-Flux3-promt-Skill** | 提示词方法论（Agent 技能，非节点） | 依据 BFL 官方文档整理的提示词模式：文生图、三视图、角色一致、多图合成、bbox 布局；**只引用方法论、不复制内容**（上游仓库无 LICENSE 文件） |
@@ -27,7 +27,7 @@
 
 ## 3. 前置条件
 
-1. **BSAI 包**：将 `custom_nodes/BSAI-FLUX3-Enhancer/` 复制到 `ComfyUI/custom_nodes/`，重启 ComfyUI。
+1. **BSAI 包**：将本仓库整体 clone 到 `ComfyUI/custom_nodes/`（仓库根即插件），重启 ComfyUI。
 2. **KK 插件**：`https://github.com/kkget/ComfyUI-Flux3-Prompt-Upsampler` 克隆到 `ComfyUI/custom_nodes/`，重启（Apache-2.0，无额外 pip 依赖）。节点名 `FLUX.3 Prompt Upsampler`，分类 `FLUX.3/text`。
 3. **模型**（基础链路本机已有；新重置权重下载中）：
 
@@ -40,7 +40,7 @@
 
 ## 4. 集成工作流（BSAI × KK）
 
-`custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_edit_bsai_x_kk.json`：
+`workflows/flux3_klein_edit_bsai_x_kk.json`：
 
 ```
 中文编辑需求

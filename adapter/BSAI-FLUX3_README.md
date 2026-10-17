@@ -22,7 +22,7 @@ BSAI-FLUX3/
 └── 许可核对报告_FLUX_Kommunity_License.md   # 许可边界结论
 ```
 
-另：提示词增强器节点位于 `ComfyUI/custom_nodes/BSAI-FLUX3-Enhancer/`（见下文）。
+另：提示词增强器节点位于 `ComfyUI/custom_nodes/BSAI-FLUX3-ComfyUI/`（仓库根即插件，见下文）。
 
 ---
 
@@ -59,12 +59,12 @@ BSAI-FLUX3/
 
 ## 提示词增强器（中文优先 MVP）
 
-节点：`BSAI FLUX3 提示词增强器（中文优先）`（分类 BSAI/FLUX3），位于 `ComfyUI/custom_nodes/BSAI-FLUX3-Enhancer/`。
+节点：`BSAI FLUX3 提示词增强器（中文优先）`（分类 BSAI/FLUX3），位于 `ComfyUI/custom_nodes/BSAI-FLUX3-ComfyUI/`（仓库根即插件）。
 
 - **双引擎**：本地 Strata LLM（127.0.0.1:8080，复用百声 Strata 服务）增强；Strata 未启动时自动降级内置规则引擎，节点永不出错。
 - **多模型模板**：FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3 各自独立提示词配方（positive + negative 双输出）。
 - **中文优先**：中文输入→中文详细描述+英文视觉关键词；语言可选 zh/en。
-- **独立测试**：`python_embeded_cuda\python.exe -s ComfyUI\custom_nodes\BSAI-FLUX3-Enhancer\test_enhancer.py --engine rule_only`
+- **独立测试**：`python_embeded_cuda\python.exe -s ComfyUI\custom_nodes\BSAI-FLUX3-ComfyUI\test_enhancer.py --engine rule_only`
 - **许可**：增强器为自有代码+自有 LLM，不依赖 FLUX 权重/输出，无 FLUX 许可风险。
 
 ### 三档提示词管线（同一句中文，三套工作流）
@@ -72,8 +72,8 @@ BSAI-FLUX3/
 | 档位 | 工作流 | 行为 | 许可 |
 |---|---|---|---|
 | 0. 原始 | `BSAI-FLUX3\workflows\flux3_klein_t2i_api.json` | 提示词原样进 FLUX3 | FLUX Kommunity |
-| 1. 增强器 | `custom_nodes\BSAI-FLUX3-Enhancer\workflows\flux3_klein_t2i_enhanced_api.json` | rule_only=原文+质量词缀；auto/strata_local=Strata LLM 中文电影感扩写 | 自有代码，零风险 |
-| 2. 官方上采样器 | `custom_nodes\BSAI-FLUX3-Enhancer\workflows\flux3_klein_t2i_upsampler_api.json` | ComfyUI 原生 `TextGenerate` + BFL qwen3.5-9B，短请求→完整英文场景描述 | 上采样器 Apache-2.0 |
+| 1. 增强器 | `workflows\flux3_klein_t2i_enhanced_api.json` | rule_only=原文+质量词缀；auto/strata_local=Strata LLM 中文电影感扩写 | 自有代码，零风险 |
+| 2. 官方上采样器 | `workflows\flux3_klein_t2i_upsampler_api.json` | ComfyUI 原生 `TextGenerate` + BFL qwen3.5-9B，短请求→完整英文场景描述 | 上采样器 Apache-2.0 |
 
 官方上采样器使用（已实测）：权重 `qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors`（~9.1GB，`models/text_encoders/`）由 `CLIPLoader(type=flux3)` 加载（ComfyUI 识别为 QWEN35_9B），`TextGenerate` 自回归扩写后接入正片 positive。5090 实测：仅扩写首跑 ≈249s（冷加载为主），1024² 全流程首跑 ≈453s。也可 1→2 串联（增强器 positive → TextGenerate.prompt）。
 
