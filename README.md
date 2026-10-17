@@ -20,12 +20,16 @@ BSAI-FLUX3-ComfyUI/
 │   ├── _license/                     # FLUX Kommunity License v1.0 archive
 │   ├── 许可核对报告_FLUX_Kommunity_License.md
 │   └── 实测报告_5090_FLUX3_Klein.md  # real measurements on RTX 5090 Laptop
+├── docs/                             # ecosystem & integration guide
+│   ├── FLUX3_ECOSYSTEM.md            # BSAI x KK x official reset (EN)
+│   └── FLUX3_ECOSYSTEM.zh-CN.md      # 同上（中文）
 └── custom_nodes/
     └── BSAI-FLUX3-Enhancer/          # ComfyUI prompt-enhancer custom node
         ├── README.md / README.zh-CN.md
         └── workflows/
             ├── flux3_klein_t2i_enhanced_api.json    # tier 1: enhancer (rule / Strata LLM)
-            └── flux3_klein_t2i_upsampler_api.json   # tier 2: official upsampler
+            ├── flux3_klein_t2i_upsampler_api.json   # tier 2: official upsampler
+            └── flux3_klein_edit_bsai_x_kk.json      # BSAI x KK integration (image edit)
 ```
 
 ## Quick start
@@ -63,6 +67,7 @@ The "8 GB VRAM" claim holds for the INT8 distilled model under dynamic offloadin
 | 0. Raw | `adapter/workflows/flux3_klein_t2i_api.json` | prompt goes to FLUX3 exactly as typed |
 | 1. Enhancer | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_enhanced_api.json` | rule_only: original + quality affixes; auto / strata_local: Strata LLM cinematic rewrite (Chinese-first) |
 | 2. Official upsampler | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_upsampler_api.json` | ComfyUI native `TextGenerate` + BFL `qwen3.5-9B` upsampler: short request → full English scene caption |
+| 3. Edit (BSAI × KK) | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_edit_bsai_x_kk.json` | Chinese-first enhancement → KK official 9B upsampler → reference-image editing (requires the kkget plugin) |
 
 Tier 2 runs on native ComfyUI 0.41 nodes only (no extra plugin): the upsampler checkpoint
 `qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors` (~9.1 GB, `models/text_encoders/`) is
@@ -70,6 +75,17 @@ detected as `QWEN35_9B` and loaded via `CLIPLoader` with `type=flux3`; `TextGene
 autoregressive rewrite. Measured on RTX 5090 Laptop 24G: rewrite alone ≈ 249 s first run (mostly cold
 load), full 1024² end-to-end ≈ 453 s first run. The upsampler model is Apache-2.0. You can also chain
 tier 1 → tier 2 by feeding the enhancer `positive` output into `TextGenerate.prompt`.
+
+## FLUX.3 ecosystem & KK integration
+
+Division of labor with the community upsampler plugin and the official "reset/optimized" release — see **[docs/FLUX3_ECOSYSTEM.md](./docs/FLUX3_ECOSYSTEM.md)** for the full guide:
+
+- **BSAI enhancer** = enhancement & orchestration (Chinese-first, Strata, auto-start, Intel adapter).
+- **kkget/ComfyUI-Flux3-Prompt-Upsampler** (Apache-2.0, install side by side) = official feature implementation: up to 10 reference images + bounding-box editing.
+- **Official reset release** (Quark netdisk link in the video description) = new distilled models, native FLUX.3 subgraph workflows, **4–16 steps**.
+- `workflows/flux3_klein_edit_bsai_x_kk.json` chains them: Chinese request → BSAI enhancer → KK official 9B upsampler → reference-image editing.
+
+Licensing boundary: the KK plugin is Apache-2.0 (referenced, not vendored); the KK Skill repo has **no LICENSE file** (referenced by link only); FLUX.3 weights remain under the FLUX Kommunity License v1.0.
 
 ## License
 

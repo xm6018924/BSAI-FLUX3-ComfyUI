@@ -20,12 +20,16 @@ BSAI-FLUX3-ComfyUI/
 │   ├── _license/                     # FLUX Kommunity License v1.0 存档
 │   ├── 许可核对报告_FLUX_Kommunity_License.md
 │   └── 实测报告_5090_FLUX3_Klein.md  # RTX 5090 Laptop 实测
+├── docs/                             # 生态与集成指南
+│   ├── FLUX3_ECOSYSTEM.md            # BSAI x KK x 官方重置版（英文）
+│   └── FLUX3_ECOSYSTEM.zh-CN.md      # 同上（中文）
 └── custom_nodes/
     └── BSAI-FLUX3-Enhancer/          # ComfyUI 提示词增强器节点
         ├── README.md / README.zh-CN.md
         └── workflows/
             ├── flux3_klein_t2i_enhanced_api.json    # 第1档：增强器（rule / Strata LLM）
-            └── flux3_klein_t2i_upsampler_api.json   # 第2档：官方上采样器
+            ├── flux3_klein_t2i_upsampler_api.json   # 第2档：官方上采样器
+            └── flux3_klein_edit_bsai_x_kk.json      # BSAI x KK 协同（图像编辑）
 ```
 
 ## 快速开始
@@ -62,12 +66,24 @@ BSAI-FLUX3-ComfyUI/
 | 0. 原始 | `adapter/workflows/flux3_klein_t2i_api.json` | 提示词原样进 FLUX3 |
 | 1. 增强器 | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_enhanced_api.json` | rule_only=原文+质量词缀；auto/strata_local=Strata LLM 电影感扩写（中文优先） |
 | 2. 官方上采样器 | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_t2i_upsampler_api.json` | ComfyUI 原生 `TextGenerate` + BFL `qwen3.5-9B`：短请求→完整英文场景描述 |
+| 3. 图像编辑（BSAI × KK） | `custom_nodes/BSAI-FLUX3-Enhancer/workflows/flux3_klein_edit_bsai_x_kk.json` | 中文增强 → KK 官方 9B 扩写 → 参考图编辑（需安装 kkget 插件） |
 
 第 2 档只用 ComfyUI 0.41 原生节点（无需额外插件）：上采样器权重
 `qwen3.5_9b_flux3_prompt_upsampler_int8_convrot.safetensors`（~9.1GB，`models/text_encoders/`）
 被识别为 `QWEN35_9B`，用 `CLIPLoader` + `type=flux3` 加载，`TextGenerate` 自回归扩写后接入正片。
 5090 Laptop 24G 实测：仅扩写首跑 ≈249s（冷加载为主），1024² 全流程首跑 ≈453s。
 上采样器模型许可为 Apache-2.0。也可 1→2 串联（增强器 `positive` → `TextGenerate.prompt`）。
+
+## FLUX.3 生态与 KK 集成
+
+与社区上采样器插件、官方「重置大幅优化版」的分工，完整指南见 **[docs/FLUX3_ECOSYSTEM.zh-CN.md](./docs/FLUX3_ECOSYSTEM.zh-CN.md)**：
+
+- **BSAI 增强器** = 增强与编排（中文优先、Strata、自动拉起、Intel 适配）。
+- **kkget/ComfyUI-Flux3-Prompt-Upsampler**（Apache-2.0，并列安装）= 官方能力实现：至多 10 张参考图 + 框坐标编辑。
+- **官方重置版**（视频描述中的夸克网盘链接）= 新蒸馏模型、原生 FLUX.3 子图工作流、**4–16 步**。
+- `workflows/flux3_klein_edit_bsai_x_kk.json` 串起全链路：中文需求 → BSAI 增强器 → KK 官方 9B 扩写 → 参考图编辑。
+
+许可边界：KK 插件为 Apache-2.0（引用不内置）；KK Skill 仓库**无 LICENSE**（仅链接引用）；FLUX.3 权重仍受 FLUX Kommunity License v1.0 管辖。
 
 ## 许可
 
