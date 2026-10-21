@@ -56,8 +56,17 @@ BSAI-FLUX3-ComfyUI/
 - 中文优先：一句中文粗略想法 → 可直接出图的详细提示词。
 - 双引擎：本地 Strata LLM（127.0.0.1:8080，复用 BSAI-LLM-Strata）在线走 LLM，离线自动降级规则引擎，永不出错。
 - Strata 自动启动为"复用优先"：只要已有 Strata 实例（模型就绪 / 8080 端口已监听 / 引擎进程加载中 / **新版 Manager 已运行在 8081**），节点只等待、绝不重复拉起第二个实例；仅在完全无实例时才自动启动。新版架构（BSAI-LLM-Strata `bsai_model_manager.py`，Manager=8081 / 引擎=8080）下，节点会自动通过 `POST /api/switch` 触发模型加载并等待引擎就绪——无需再手动在 Web UI 里选模型。
-- FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3 三套配方；输出 `positive` + `negative`。
+- FLUX3 Klein **基础版 / step-distilled 蒸馏版**（配合 Qwen3-VL-4B 文本编码器 + Flux2 VAE）/ Qwen-Image 2.1 **原版 / Turbo 8步蒸馏版** / MiniMax H3 五套配方；输出 `positive` + `negative`。`target_model` 下拉直接选配方：`flux3_klein`=基础版、`flux3_klein_sd`=蒸馏版、`qwen_image_2.1_turbo`=8步加速档。
 - UI 为英文（符合 ComfyUI 自定义节点规范），中文体验由搜索别名 + README.zh-CN.md 提供。
+
+## 检查点变体（与 ComfyUI 0.41 原生 FLUX.3 支持对齐）
+
+| 变体 | 文件（`models/diffusion_models/`） | 典型用途 |
+|---|---|---|
+| 基础版（INT8 / BF16） | `flux3_image_klein_int8_convrot.safetensors` / `flux3_image_klein_bf16.safetensors` | 全质量出图，LoRA/微调底座 |
+| 蒸馏版（INT8 / BF16） | `flux3_image_klein_sd_int8_convrot.safetensors` / `flux3_image_klein_sd_bf16.safetensors` | 快速出图，4–16 步 |
+
+两种变体均用 `UNETLoader` 加载（自动识别为 FLUX3）；文本编码器 `CLIPLoader` + `qwen3vl_4b_*` + `type=flux3`；VAE 用 `flux2-vae.safetensors`。`bsai_flux3_check.py` 会检查全部 4 个扩散模型变体 + Qwen3-VL-4B + Flux2 VAE；`01_下载FLUX3权重.bat` 已同时下载基础版与蒸馏版权重。
 
 ## 三档提示词管线（同一句提示词，三套工作流）
 

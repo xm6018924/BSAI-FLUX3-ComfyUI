@@ -23,4 +23,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BSAI_FLUX3_PromptRouter": "BSAI FLUX3 Prompt Router (3-Tier)",
 }
 
-__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
+# 前端扩展目录：engine 联动显隐模型控件（web/flux3_enhancer.js）
+WEB_DIRECTORY = "./web"
+
+__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]

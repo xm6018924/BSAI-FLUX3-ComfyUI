@@ -41,8 +41,9 @@ class BSAI_FLUX3_PromptRouter:
     DESCRIPTION = (
         "Select which prompt pipeline feeds positive/negative conditioning. "
         "raw: no processing; enhancer: BSAI FLUX3 Prompt Enhancer output "
-        "(rule_only / Strata LLM); upsampler: official FLUX3 prompt upsampler "
-        "via TextGenerate. Lazy: only the selected branch executes."
+        "(rule_only / Strata LLM; target_model supports Klein base / step-distilled, "
+        "Qwen-Image 2.1 native / Turbo 8-step, MiniMax H3); upsampler: official FLUX3 "
+        "prompt upsampler via TextGenerate. Lazy: only the selected branch executes."
     )
     SEARCH_ALIASES = [
         "tier", "prompt router", "prompt selector", "3 tier",

@@ -57,8 +57,17 @@ The "8 GB VRAM" claim holds for the INT8 distilled model under dynamic offloadin
 - Chinese-first: rough Chinese idea → dense, usable image prompt.
 - Dual engine: local Strata LLM (`127.0.0.1:8080`, via BSAI-LLM-Strata) with automatic rule-engine fallback — never errors.
 - Strata auto-start is reuse-first: if a Strata instance is already present (model healthy, port 8080 listening, engine process loading, **or the new-arch Manager on port 8081 is up**), the node waits for it and **never spawns a second instance**; it only starts Strata when nothing is running. With the new-arch Manager (BSAI-LLM-Strata `bsai_model_manager.py`, Manager=8081 / engine=8080), the node auto-triggers the model load via `POST /api/switch` and waits for the engine to become ready — you no longer need to pick a model in the Web UI manually.
-- Recipes for FLUX3 Klein / Qwen-Image 2.1 / MiniMax H3; outputs `positive` + `negative`.
+- Recipes for FLUX3 Klein (**base / step-distilled**, paired with the Qwen3-VL-4B text encoder + Flux2 VAE) / Qwen-Image 2.1 (**native / Turbo 8-step distilled**) / MiniMax H3; outputs `positive` + `negative`.
 - English UI per ComfyUI custom-node conventions; Chinese support via search aliases + README.zh-CN.md.
+
+## Checkpoint variants (aligned with ComfyUI 0.41 native FLUX.3 support)
+
+| Variant | File (`models/diffusion_models/`) | Typical use |
+|---|---|---|
+| Base (INT8 / BF16) | `flux3_image_klein_int8_convrot.safetensors` / `flux3_image_klein_bf16.safetensors` | full-quality generation, LoRA / fine-tune base |
+| Step-distilled (INT8 / BF16) | `flux3_image_klein_sd_int8_convrot.safetensors` / `flux3_image_klein_sd_bf16.safetensors` | fast render, 4–16 steps |
+
+Both load via `UNETLoader` (detected as FLUX3); text encoder = `CLIPLoader` `qwen3vl_4b_*` with `type=flux3`; VAE = `flux2-vae.safetensors`. The enhancer's `target_model` dropdown selects the matching prompt recipe (`flux3_klein` = base, `flux3_klein_sd` = step-distilled). `bsai_flux3_check.py` checks all four diffusion variants + Qwen3-VL-4B + Flux2 VAE; `01_下载FLUX3权重.bat` now downloads base and distilled checkpoints.
 
 ## Three prompt tiers (same prompt, three workflows)
 

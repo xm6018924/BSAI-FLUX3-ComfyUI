@@ -6,6 +6,14 @@ https://hf-mirror.com/ml-resources/flux-3-image-klein-comfy/resolve/main/diffusi
   dir=G:\BSAI-ComfyUI-intel-XPU-GPU-NPU-aki\ComfyUI\models\diffusion_models
   out=flux3_image_klein_sd_bf16.safetensors
 
+https://hf-mirror.com/ml-resources/flux-3-image-klein-comfy/resolve/main/diffusion_models/flux3_image_klein_int8_convrot.safetensors
+  dir=G:\BSAI-ComfyUI-intel-XPU-GPU-NPU-aki\ComfyUI\models\diffusion_models
+  out=flux3_image_klein_int8_convrot.safetensors
+
+https://hf-mirror.com/ml-resources/flux-3-image-klein-comfy/resolve/main/diffusion_models/flux3_image_klein_bf16.safetensors
+  dir=G:\BSAI-ComfyUI-intel-XPU-GPU-NPU-aki\ComfyUI\models\diffusion_models
+  out=flux3_image_klein_bf16.safetensors
+
 https://hf-mirror.com/ml-resources/flux-3-image-klein-comfy/resolve/main/text_encoders/qwen3vl_4b_int8_convrot.safetensors
   dir=G:\BSAI-ComfyUI-intel-XPU-GPU-NPU-aki\ComfyUI\models\text_encoders
   out=qwen3vl_4b_int8_convrot.safetensors
