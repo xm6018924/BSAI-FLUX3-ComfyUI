@@ -10,3 +10,6 @@ __pycache__/
 *.db
 *.sqlite3
 *.aria2
+
+# ninfer engine binaries (ported from AIManzi; too large for git, not redistributable)
+engine/
