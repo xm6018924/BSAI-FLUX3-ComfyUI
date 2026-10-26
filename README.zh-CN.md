@@ -42,14 +42,27 @@ BSAI-FLUX3-ComfyUI/
 
 ## NInfer 引擎（提示词增强用，可选）
 
-`ninfer-serve.exe` 是 500MB+ 的预编译二进制且不可再分发，**不在本仓库里**（`engine/` 已被 .gitignore 排除）。缺失时增强器自动退回规则引擎，不影响出图；需要 NInfer 提速时，按以下顺序自动查找引擎目录：
+`ninfer-serve.exe` 是 300~400MB 的预编译二进制，超过 GitHub 单文件 100MB 限制，**不能走普通 git**（`engine/` 已被 .gitignore 排除），因此改由 **Release 附件**分发。缺失时增强器自动退回规则引擎，不影响出图。
+
+**安装（按显卡选一个包）**
+
+1. 打开 [Releases](../../releases/tag/v1-ninfer-engine)，下载：
+   - `engine-sm120.zip` — RTX 50 系（compute capability 12.0+），约 323MB
+   - `engine-sm89.zip` — RTX 40 系（compute capability 8.9），约 393MB
+2. 解压到本插件根目录，最终结构为 `BSAI-FLUX3-ComfyUI/engine/ninfer-smXX/ninfer-serve.exe` + `engine/runtime/`：
+
+```powershell
+Expand-Archive -Path engine-sm120.zip -DestinationPath <ComfyUI>\custom_nodes\BSAI-FLUX3-ComfyUI -Force
+```
+
+3. 重启 ComfyUI。模型放在 `ComfyUI/models/LLM/**/*.ninfer`（不随包分发）。
+
+引擎目录的自动查找顺序（装好后无需手动配置）：
 
 1. 环境变量 `BSAI_NINFER_ENGINE_DIR` 指向的 `engine/` 目录；
-2. 本插件自己的 `engine/`（手动放置，见下）；
-3. 同目录下 `ComfyUI-AIManzi-MultimodalPrompt/engine/`（上游来源，装了该插件即可直接用）；
+2. 本插件自己的 `engine/`（上一步解压的位置）；
+3. 同目录下 `ComfyUI-AIManzi-MultimodalPrompt/engine/`（上游来源，装了该插件也能直接用）；
 4. `custom_nodes/*/engine/` 中任何已含 `ninfer-sm120|sm89/ninfer-serve.exe` 的插件。
-
-引擎需要的 `runtime/`、`ninfer-sm120/`（RTX 50 系）、`ninfer-sm89/`（RTX 40 系）三个子目录要放在一起。模型放 `ComfyUI/models/LLM/**/*.ninfer`。
 
 ## 本机实测（RTX 5090 Laptop 24G，蒸馏版 INT8，1024² / 16 步）
 

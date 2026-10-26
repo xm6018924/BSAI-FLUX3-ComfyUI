@@ -43,14 +43,27 @@ BSAI-FLUX3-ComfyUI/
 
 ## NInfer engine (optional, used for prompt enhancement)
 
-`ninfer-serve.exe` is a 500MB+ prebuilt binary that cannot be redistributed, so **it is not in this repo** (`engine/` is git-ignored). Without it the enhancer falls back to the deterministic rule engine; images still render. When present, the engine directory is resolved automatically in this order:
+`ninfer-serve.exe` is a 300-400MB prebuilt binary, above GitHub's 100MB per-file limit, so it **cannot go through plain git** (`engine/` is git-ignored) and is distributed as a **Release asset** instead. Without it the enhancer falls back to the deterministic rule engine; images still render.
+
+**Install (pick the bundle for your GPU)**
+
+1. Open [Releases](../../releases/tag/v1-ninfer-engine) and download:
+   - `engine-sm120.zip` — RTX 50 series (compute capability 12.0+), ~323MB
+   - `engine-sm89.zip` — RTX 40 series (compute capability 8.9), ~393MB
+2. Extract into this plugin's root so you end up with `BSAI-FLUX3-ComfyUI/engine/ninfer-smXX/ninfer-serve.exe` plus `engine/runtime/`:
+
+```powershell
+Expand-Archive -Path engine-sm120.zip -DestinationPath <ComfyUI>\custom_nodes\BSAI-FLUX3-ComfyUI -Force
+```
+
+3. Restart ComfyUI. Models go to `ComfyUI/models/LLM/**/*.ninfer` (not shipped either).
+
+Once installed, the engine directory is resolved automatically in this order:
 
 1. the directory pointed to by the `BSAI_NINFER_ENGINE_DIR` env var;
-2. this plugin's own `engine/`;
-3. `ComfyUI-AIManzi-MultimodalPrompt/engine/` from a sibling plugin (upstream source — installing that plugin is enough);
+2. this plugin's own `engine/` (where step 2 extracted it);
+3. `ComfyUI-AIManzi-MultimodalPrompt/engine/` from a sibling plugin (upstream source);
 4. any `custom_nodes/*/engine/` that already contains `ninfer-sm120|sm89/ninfer-serve.exe`.
-
-Keep `runtime/`, `ninfer-sm120/` (RTX 50 series) and `ninfer-sm89/` (RTX 40 series) together in that engine directory. Models go to `ComfyUI/models/LLM/**/*.ninfer`.
 
 ## Measured results (RTX 5090 Laptop 24G, distilled INT8, 1024² / 16 steps)
 
