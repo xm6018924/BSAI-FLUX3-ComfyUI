@@ -44,9 +44,19 @@ BSAI-FLUX3-ComfyUI/
 
 `ninfer-serve.exe` 是 300~400MB 的预编译二进制，超过 GitHub 单文件 100MB 限制，**不能走普通 git**（`engine/` 已被 .gitignore 排除），因此改由 **Release 附件**分发。缺失时增强器自动退回规则引擎，不影响出图。
 
-**安装（按显卡选一个包）**
+**获取引擎（方式 A / B 任选其一）**
 
-1. 打开 [Releases](../../releases/tag/v1-ninfer-engine)，下载：
+**方式 A：网盘完整包（国内网络推荐，一包全含）**
+
+- 下载 `BSAI-FLUX3-ComfyUI-full-ninfer.zip`（约 574MB：插件本体 + `ninfer-sm120` + `ninfer-sm89` + `runtime`，一张卡都不用再挑包）
+- 夸克网盘：<https://pan.quark.cn/s/9e3e390c4471>（无需提取码；大文件建议用夸克客户端下载，浏览器直传可能限速）
+- 校验文件（sha256.txt）：<https://pan.quark.cn/s/c276548108ae>
+- SHA256：`b0dba545bf732af8ffc44e08693df68f6c74c0921d6b12e56b42a58e5b190d90`
+- 解压后把 `BSAI-FLUX3-ComfyUI` 整个目录放进 `custom_nodes\`，包内已带引擎，直接跳到第 3 步。
+
+**方式 B：GitHub Release（按显卡分包）**
+
+1. 打开 [Releases](../../releases/tag/v1-ninfer-engine)，按显卡下载一个：
    - `engine-sm120.zip` — RTX 50 系（compute capability 12.0+），约 323MB
    - `engine-sm89.zip` — RTX 40 系（compute capability 8.9），约 393MB
 2. 解压到本插件根目录，最终结构为 `BSAI-FLUX3-ComfyUI/engine/ninfer-smXX/ninfer-serve.exe` + `engine/runtime/`：
@@ -55,7 +65,7 @@ BSAI-FLUX3-ComfyUI/
 Expand-Archive -Path engine-sm120.zip -DestinationPath <ComfyUI>\custom_nodes\BSAI-FLUX3-ComfyUI -Force
 ```
 
-3. 重启 ComfyUI。模型放在 `ComfyUI/models/LLM/**/*.ninfer`（不随包分发）。
+3. 重启 ComfyUI（两种方式通用）。模型放在 `ComfyUI/models/LLM/**/*.ninfer`（不随包分发）。
 
 引擎目录的自动查找顺序（装好后无需手动配置）：
 

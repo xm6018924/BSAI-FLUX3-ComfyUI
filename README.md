@@ -45,9 +45,19 @@ BSAI-FLUX3-ComfyUI/
 
 `ninfer-serve.exe` is a 300-400MB prebuilt binary, above GitHub's 100MB per-file limit, so it **cannot go through plain git** (`engine/` is git-ignored) and is distributed as a **Release asset** instead. Without it the enhancer falls back to the deterministic rule engine; images still render.
 
-**Install (pick the bundle for your GPU)**
+**Get the engine (pick either option A or B)**
 
-1. Open [Releases](../../releases/tag/v1-ninfer-engine) and download:
+**Option A: cloud-drive bundle (recommended for users in mainland China, all-in-one)**
+
+- Download `BSAI-FLUX3-ComfyUI-full-ninfer.zip` (~574MB: plugin + `ninfer-sm120` + `ninfer-sm89` + `runtime`, no GPU picking needed)
+- Quark cloud drive: <https://pan.quark.cn/s/9e3e390c4471> (no passcode; the Quark client gives much faster speeds for large files)
+- Checksum file (sha256.txt): <https://pan.quark.cn/s/c276548108ae>
+- SHA256: `b0dba545bf732af8ffc44e08693df68f6c74c0921d6b12e56b42a58e5b190d90`
+- Extract and drop the whole `BSAI-FLUX3-ComfyUI` folder into `custom_nodes\`; the engine is already inside, so skip to step 3.
+
+**Option B: GitHub Release (one bundle per GPU family)**
+
+1. Open [Releases](../../releases/tag/v1-ninfer-engine) and download one:
    - `engine-sm120.zip` — RTX 50 series (compute capability 12.0+), ~323MB
    - `engine-sm89.zip` — RTX 40 series (compute capability 8.9), ~393MB
 2. Extract into this plugin's root so you end up with `BSAI-FLUX3-ComfyUI/engine/ninfer-smXX/ninfer-serve.exe` plus `engine/runtime/`:
@@ -56,7 +66,7 @@ BSAI-FLUX3-ComfyUI/
 Expand-Archive -Path engine-sm120.zip -DestinationPath <ComfyUI>\custom_nodes\BSAI-FLUX3-ComfyUI -Force
 ```
 
-3. Restart ComfyUI. Models go to `ComfyUI/models/LLM/**/*.ninfer` (not shipped either).
+3. Restart ComfyUI (either option). Models go to `ComfyUI/models/LLM/**/*.ninfer` (not shipped).
 
 Once installed, the engine directory is resolved automatically in this order:
 
