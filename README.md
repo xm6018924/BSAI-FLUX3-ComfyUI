@@ -41,6 +41,17 @@ BSAI-FLUX3-ComfyUI/
    - Intel Arc / iGPU: `adapter/03_启动FLUX3_IntelXPU.bat` → http://127.0.0.1:8194
 3. Install the enhancer node: clone this whole repo into `ComfyUI/custom_nodes/` (the repo root **is** the plugin: `__init__.py` sits at the root). Restart ComfyUI, then import an example workflow from `workflows/`.
 
+## NInfer engine (optional, used for prompt enhancement)
+
+`ninfer-serve.exe` is a 500MB+ prebuilt binary that cannot be redistributed, so **it is not in this repo** (`engine/` is git-ignored). Without it the enhancer falls back to the deterministic rule engine; images still render. When present, the engine directory is resolved automatically in this order:
+
+1. the directory pointed to by the `BSAI_NINFER_ENGINE_DIR` env var;
+2. this plugin's own `engine/`;
+3. `ComfyUI-AIManzi-MultimodalPrompt/engine/` from a sibling plugin (upstream source — installing that plugin is enough);
+4. any `custom_nodes/*/engine/` that already contains `ninfer-sm120|sm89/ninfer-serve.exe`.
+
+Keep `runtime/`, `ninfer-sm120/` (RTX 50 series) and `ninfer-sm89/` (RTX 40 series) together in that engine directory. Models go to `ComfyUI/models/LLM/**/*.ninfer`.
+
 ## Measured results (RTX 5090 Laptop 24G, distilled INT8, 1024² / 16 steps)
 
 | Config | Total (cold) | Warm | VRAM peak |

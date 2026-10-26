@@ -3,7 +3,8 @@
 Ports the ninfer-serve.exe engine originally shipped in
 ComfyUI-AIManzi-MultimodalPrompt into this plugin. The engine is an
 OpenAI-compatible local LLM server (text-only, no vision) that we launch
-on demand from ``./engine/ninfer-sm<XX>/ninfer-serve.exe``.
+on demand from the resolved engine dir (``ENGINE_DIR``, see
+``_resolve_engine_dir`` — own ``./engine/`` first, then a sibling plugin's).
 
 Design notes
 ------------
@@ -45,7 +46,32 @@ except ImportError:  # standalone / diagnostic import
 # Configuration
 # ---------------------------------------------------------------------------
 _PLUGIN_DIR = Path(__file__).resolve().parent
-ENGINE_DIR = _PLUGIN_DIR / "engine"
+
+
+def _resolve_engine_dir() -> Path:
+    """Engine dir bundling ninfer-sm<XX>/ + runtime/ (may live in another plugin).
+
+    The binaries are too large for git and are not redistributed here, so fall
+    back to $BSAI_NINFER_ENGINE_DIR, the upstream AIManzi plugin, or any
+    sibling custom_nodes plugin that already carries an engine dir.
+    """
+    env_dir = os.environ.get("BSAI_NINFER_ENGINE_DIR", "").strip()
+    cands = ([Path(env_dir)] if env_dir else []) + [
+        _PLUGIN_DIR / "engine",
+        _PLUGIN_DIR.parent / "ComfyUI-AIManzi-MultimodalPrompt" / "engine",
+    ]
+    try:
+        cands += sorted(p / "engine" for p in _PLUGIN_DIR.parent.iterdir() if p.is_dir())
+    except OSError:
+        pass
+    for d in cands:
+        if any((d / sub / "ninfer-serve.exe").is_file()
+               for sub in ("ninfer-sm120", "ninfer-sm89")):
+            return d
+    return _PLUGIN_DIR / "engine"
+
+
+ENGINE_DIR = _resolve_engine_dir()
 
 NINFER_HOST = "127.0.0.1"
 NINFER_PORT = 8082
@@ -152,7 +178,9 @@ def _gpu_profile() -> dict:
     exe = ENGINE_DIR / engine_sub / "ninfer-serve.exe"
     if not exe.is_file():
         raise RuntimeError(
-            f"当前 GPU 对应引擎缺失：{exe}。请检查本插件 engine/{engine_sub} 目录。"
+            f"当前 GPU 对应引擎缺失：{exe}。NInfer 引擎体积过大，不随插件分发："
+            "请安装 ComfyUI-AIManzi-MultimodalPrompt 插件（自带 engine/），"
+            "或把 engine/ 放到本插件目录，或设置环境变量 BSAI_NINFER_ENGINE_DIR。"
         )
     return {
         "engine_dir": engine_sub,

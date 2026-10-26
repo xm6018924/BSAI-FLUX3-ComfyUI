@@ -40,6 +40,17 @@ BSAI-FLUX3-ComfyUI/
    - Intel Arc/核显：`adapter/03_启动FLUX3_IntelXPU.bat` → http://127.0.0.1:8194
 3. 安装增强器：将本仓库整体 clone 到 `ComfyUI/custom_nodes/`（仓库根即插件，根目录含 `__init__.py`），重启 ComfyUI 后从 `workflows/` 导入示例工作流即可。
 
+## NInfer 引擎（提示词增强用，可选）
+
+`ninfer-serve.exe` 是 500MB+ 的预编译二进制且不可再分发，**不在本仓库里**（`engine/` 已被 .gitignore 排除）。缺失时增强器自动退回规则引擎，不影响出图；需要 NInfer 提速时，按以下顺序自动查找引擎目录：
+
+1. 环境变量 `BSAI_NINFER_ENGINE_DIR` 指向的 `engine/` 目录；
+2. 本插件自己的 `engine/`（手动放置，见下）；
+3. 同目录下 `ComfyUI-AIManzi-MultimodalPrompt/engine/`（上游来源，装了该插件即可直接用）；
+4. `custom_nodes/*/engine/` 中任何已含 `ninfer-sm120|sm89/ninfer-serve.exe` 的插件。
+
+引擎需要的 `runtime/`、`ninfer-sm120/`（RTX 50 系）、`ninfer-sm89/`（RTX 40 系）三个子目录要放在一起。模型放 `ComfyUI/models/LLM/**/*.ninfer`。
+
 ## 本机实测（RTX 5090 Laptop 24G，蒸馏版 INT8，1024² / 16 步）
 
 | 配置 | 总耗时（含冷加载） | 热跑 | 显存峰值 |
