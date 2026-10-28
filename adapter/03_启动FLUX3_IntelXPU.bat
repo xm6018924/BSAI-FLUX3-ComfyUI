@@ -1,25 +1,25 @@
 @echo off
 setlocal
-title BSAI FLUX3 å¿«é€Ÿå¯åŠ¨ - Intel XPU/æ ¸æ˜¾
+title BSAI FLUX3 ¿ìËÙÆô¶¯ - Intel XPU/ºËÏÔ
 set "ROOT=%~dp0.."
 cd /d "%ROOT%"
 
 echo ============================================================
-echo   BSAI FLUX3 å¿«é€Ÿå¯åŠ¨ï¼ˆIntel XPU åç«¯ / é»˜è®¤ç«¯å£ 8194ï¼‰
-echo   æ¨¡å‹ï¼šflux3_image_klein_sd_int8_convrotï¼ˆINT8 é‡åŒ–æ¡£ï¼‰
-echo   é€‚ç”¨ï¼šArc ç‹¬æ˜¾ / Arc æ ¸æ˜¾ï¼ˆCore Ultraï¼‰/ æ—  NVIDIA æœºå‹
-echo   æ³¨æ„ï¼šXPU ä¾§å…±äº«å†…å­˜ï¼Œå»ºè®® >=16GB ç‰©ç†å†…å­˜ï¼›4K å‡ºå›¾ä¼šå¾ˆæ…¢
+echo   BSAI FLUX3 ¿ìËÙÆô¶¯£¨Intel XPU ºó¶Ë / Ä¬ÈÏ¶Ë¿Ú 8194£©
+echo   Ä£ĞÍ£ºflux3_image_klein_sd_int8_convrot£¨INT8 Á¿»¯µµ£©
+echo   ÊÊÓÃ£ºArc ¶ÀÏÔ / Arc ºËÏÔ£¨Core Ultra£©/ ÎŞ NVIDIA »úĞÍ
+echo   ×¢Òâ£ºXPU ²à¹²ÏíÄÚ´æ£¬½¨Òé >=16GB ÎïÀíÄÚ´æ£»4K ³öÍ¼»áºÜÂı
 echo ============================================================
 
 if not exist "%ROOT%\python_embeded\python.exe" (
-    echo [ERROR] æœªæ‰¾åˆ° python_embededï¼ˆXPU è¿è¡Œæ—¶ï¼‰
+    echo [ERROR] Î´ÕÒµ½ python_embeded£¨XPU ÔËĞĞÊ±£©
     pause & exit /b 1
 )
 
 "%ROOT%\python_embeded\python.exe" -s "%~dp0bsai_flux3_check.py" 2>nul
 if errorlevel 1 (
     echo.
-    echo [BSAI] æƒé‡æœªå°±ç»ªï¼è¯·å…ˆè¿è¡Œ 01_ä¸‹è½½FLUX3æƒé‡.bat
+    echo [BSAI] È¨ÖØÎ´¾ÍĞ÷£¡ÇëÏÈÔËĞĞ 01_ÏÂÔØFLUX3È¨ÖØ.bat
     pause & exit /b 1
 )
 
@@ -36,7 +36,7 @@ set HF_ENDPOINT=https://hf-mirror.com
 set PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True,garbage_collection_threshold:0.6,max_split_size_mb:256
 set TRANSFORMERS_DISABLE_DOCSTRING_VALIDATION=1
 
-echo [BSAI] å¯åŠ¨ ComfyUIï¼ˆXPU åç«¯ï¼‰...
+echo [BSAI] Æô¶¯ ComfyUI£¨XPU ºó¶Ë£©...
 "%ROOT%\python_embeded\python.exe" -u -s ComfyUI\main.py ^
     --reserve-vram 4 --preview-method auto --windows-standalone-build ^
     --listen --port 8194 --async-offload --enable-dynamic-vram ^

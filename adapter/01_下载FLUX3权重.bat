@@ -1,36 +1,36 @@
 @echo off
 setlocal
-title BSAI FLUX3 æƒé‡ä¸€é”®ä¸‹è½½ï¼ˆæ–­ç‚¹ç»­ä¼ ï¼‰
+title BSAI FLUX3 È¨ÖØÒ»¼üÏÂÔØ£¨¶ÏµãĞø´«£©
 set "ROOT=%~dp0.."
 cd /d "%ROOT%"
 
 echo ============================================================
-echo   BSAI FLUX3 Klein æƒé‡ä¸€é”®ä¸‹è½½ï¼ˆhf-mirror + aria2 å¤šçº¿ç¨‹ï¼‰
-echo   çº¦ 30GBï¼Œæ”¯æŒæ–­ç‚¹ç»­ä¼ ï¼›ä¸‹è½½åå¯éšæ—¶ä¸­æ–­é‡å¯ç»§ç»­
+echo   BSAI FLUX3 Klein È¨ÖØÒ»¼üÏÂÔØ£¨hf-mirror + aria2 ¶àÏß³Ì£©
+echo   Ô¼ 30GB£¬Ö§³Ö¶ÏµãĞø´«£»ÏÂÔØºó¿ÉËæÊ±ÖĞ¶ÏÖØÆô¼ÌĞø
 echo ============================================================
 
 if not exist "%~dp0_download_list.txt" (
-    echo [ERROR] æœªæ‰¾åˆ° _download_list.txt
+    echo [ERROR] Î´ÕÒµ½ _download_list.txt
     pause & exit /b 1
 )
 
 if not exist "%ROOT%\.launcher\aria2c.exe" (
-    echo [ERROR] æœªæ‰¾åˆ° aria2c.exeï¼ˆ.launcher\aria2c.exeï¼‰
+    echo [ERROR] Î´ÕÒµ½ aria2c.exe£¨.launcher\aria2c.exe£©
     pause & exit /b 1
 )
 
-echo [BSAI] å¯åŠ¨ aria2 ä¸‹è½½ï¼ˆ16 çº¿ç¨‹/æ–‡ä»¶ï¼Œæ–­ç‚¹ç»­ä¼ ï¼‰...
+echo [BSAI] Æô¶¯ aria2 ÏÂÔØ£¨16 Ïß³Ì/ÎÄ¼ş£¬¶ÏµãĞø´«£©...
 "%ROOT%\.launcher\aria2c.exe" --continue=true -x 16 -s 16 -k 4M ^
     --file-allocation=none --auto-file-renaming=false --allow-overwrite=false ^
     -i "%~dp0_download_list.txt" --console-log-level=notice --summary-interval=60 ^
     --log="%~dp0_download.log"
 
 echo.
-echo [BSAI] ä¸‹è½½ç»“æŸï¼Œå¼€å§‹å®Œæ•´æ€§æ£€æŸ¥...
+echo [BSAI] ÏÂÔØ½áÊø£¬¿ªÊ¼ÍêÕûĞÔ¼ì²é...
 "%ROOT%\python_embeded\python.exe" -s "%~dp0bsai_flux3_check.py"
 if errorlevel 1 (
-    echo [BSAI] ä»æœ‰ç¼ºå¤±/ä¸å®Œæ•´æ–‡ä»¶ï¼Œå¯å†æ¬¡è¿è¡Œæœ¬è„šæœ¬ç»­ä¼ ã€‚
+    echo [BSAI] ÈÔÓĞÈ±Ê§/²»ÍêÕûÎÄ¼ş£¬¿ÉÔÙ´ÎÔËĞĞ±¾½Å±¾Ğø´«¡£
 ) else (
-    echo [BSAI] å…¨éƒ¨å°±ç»ªï¼Œå¯ä»¥å¯åŠ¨ FLUX3 äº†ï¼
+    echo [BSAI] È«²¿¾ÍĞ÷£¬¿ÉÒÔÆô¶¯ FLUX3 ÁË£¡
 )
 pause

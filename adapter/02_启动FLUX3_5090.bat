@@ -1,24 +1,24 @@
 @echo off
 setlocal
-title BSAI FLUX3 å¿«é€Ÿå¯åŠ¨ - NVIDIA 5090 (CUDA)
+title BSAI FLUX3 ¿ìËÙÆô¶¯ - NVIDIA 5090 (CUDA)
 set "ROOT=%~dp0.."
 cd /d "%ROOT%"
 
 echo ============================================================
-echo   BSAI FLUX3 å¿«é€Ÿå¯åŠ¨ï¼ˆNVIDIA CUDA åç«¯ / é»˜è®¤ç«¯å£ 8193ï¼‰
-echo   æ¨¡å‹ï¼šflux3_image_klein_sd_int8_convrotï¼ˆ8G æ¡£ï¼‰
-echo         æˆ–æ”¹ flux3_image_klein_sd_bf16ï¼ˆç”»è´¨æ¡£ï¼Œ5090 æ¨èï¼‰
+echo   BSAI FLUX3 ¿ìËÙÆô¶¯£¨NVIDIA CUDA ºó¶Ë / Ä¬ÈÏ¶Ë¿Ú 8193£©
+echo   Ä£ĞÍ£ºflux3_image_klein_sd_int8_convrot£¨8G µµ£©
+echo         »ò¸Ä flux3_image_klein_sd_bf16£¨»­ÖÊµµ£¬5090 ÍÆ¼ö£©
 echo ============================================================
 
 if not exist "%ROOT%\python_embeded_cuda\python.exe" (
-    echo [ERROR] æœªæ‰¾åˆ° python_embeded_cuda è¿è¡Œæ—¶
+    echo [ERROR] Î´ÕÒµ½ python_embeded_cuda ÔËĞĞÊ±
     pause & exit /b 1
 )
 
 "%ROOT%\python_embeded\python.exe" -s "%~dp0bsai_flux3_check.py" 2>nul
 if errorlevel 1 (
     echo.
-    echo [BSAI] æƒé‡æœªå°±ç»ªï¼è¯·å…ˆè¿è¡Œ 01_ä¸‹è½½FLUX3æƒé‡.bat
+    echo [BSAI] È¨ÖØÎ´¾ÍĞ÷£¡ÇëÏÈÔËĞĞ 01_ÏÂÔØFLUX3È¨ÖØ.bat
     pause & exit /b 1
 )
 
@@ -30,7 +30,7 @@ set VDN_H3_WINDOW_SDPA=mem_efficient
 set BSAI_H3_LLM_GPU_LAYERS=0
 set TRANSFORMERS_DISABLE_DOCSTRING_VALIDATION=1
 
-echo [BSAI] å¯åŠ¨ ComfyUIï¼ˆCUDA + sage-attentionï¼‰...
+echo [BSAI] Æô¶¯ ComfyUI£¨CUDA + sage-attention£©...
 "%ROOT%\python_embeded_cuda\python.exe" -u -s ComfyUI\main.py ^
     --reserve-vram 1 --cuda-malloc --preview-method auto ^
     --windows-standalone-build --listen --port 8193 ^
