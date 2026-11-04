@@ -115,8 +115,8 @@ def strata_health(timeout=2.0):
     failed to load), so chat would fail — treat that as unhealthy.
     """
     try:
-        status, body = _blocking_get_json(
-            "/models", timeout=timeout,
+        status, body = _blocking_get_url(
+            STRATA_BASE_URL + "/models", timeout=timeout,
             headers={"Authorization": "Bearer strata"},
         )
         if status >= 400:
@@ -139,12 +139,17 @@ def strata_chat(messages, max_tokens=512, temperature=0.7, timeout=180.0):
         "max_tokens": max_tokens,
         "temperature": temperature,
         "stream": False,
+        "reasoning_effort": "none",   # prompt enhancement needs the answer, not the thinking: it would eat max_tokens
     }).encode("utf-8")
-    status, raw = _blocking_post_json(
-        "/chat/completions", body, timeout=timeout,
+    status, raw = _blocking_post_url(
+        STRATA_BASE_URL + "/chat/completions", body, timeout=timeout,
         headers={"Authorization": "Bearer strata"},
     )
     if status >= 400:
         raise RuntimeError(f"Strata HTTP {status}: {raw[:300]}")
     data = json.loads(raw)
-    return data["choices"][0]["message"]["content"].strip()
+    message = data["choices"][0]["message"]
+    text = (message.get("content") or "").strip() or (message.get("reasoning_content") or "").strip()
+    if not text:
+        raise RuntimeError("Strata returned neither content nor reasoning_content")
+    return text
