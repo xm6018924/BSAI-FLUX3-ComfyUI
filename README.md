@@ -73,7 +73,67 @@ Once installed, the engine directory is resolved automatically in this order:
 1. the directory pointed to by the `BSAI_NINFER_ENGINE_DIR` env var;
 2. this plugin's own `engine/` (where step 2 extracted it);
 3. `ComfyUI-AIManzi-MultimodalPrompt/engine/` from a sibling plugin (upstream source);
-4. any `custom_nodes/*/engine/` that already contains `ninfer-sm120|sm89/ninfer-serve.exe`.
+4. any `custom_nodes/*/engine/` that already contains `ninfer-sm120|sm89|sm86/ninfer-serve.exe`.
+
+## Supported GPUs & upgrade steps / 支持的显卡与升级步骤
+
+**中文**：反推（NInfer 提示词增强）链路现在按**显卡算力精确命中**选引擎，不做区间外推——跨代硬跑会直接 abort。
+30 系（sm_86）已有独立槽位 `engine/ninfer-sm86/`，但上游没有 sm86 构建，30 系的正确做法是改用
+**llama.cpp (local GGUF)** 后端；20 系 / 16 系同理。
+
+| 显卡家族 | 算力 | NInfer 反推引擎 | llama.cpp 后端（GGUF） |
+|---|---|---|---|
+| RTX 50（5090 / 5080 / 5070 / 5060） | sm_120（12.1 也读 120） | ✅ `engine-sm120.zip` | ✅ 插件根 CUDA 13，驱动 ≥ **580.65** |
+| RTX 40（4090 / 4080 / 4070 / 4060） | sm_89 | ✅ `engine-sm89.zip` | ✅ 同上 |
+| RTX 30（3090 / 3080 / 3070 / 3060 / 3060 Ti） | sm_86 | ⚠️ 只有槽位：自建 `engine/ninfer-sm86/` 才会被选中，否则明确提示切换后端 | ✅ 插件根 CUDA 13，驱动 ≥ **580.65** |
+| RTX 20（2080 Ti / 2070 / 2060） | sm_75 | ❌ 无构建 | ✅ `engine-cuda12`，驱动 ≥ **525.60** |
+| GTX 16（1660 / 1650 / 1650S） | sm_61 / sm_70 | ❌ 无构建 | ✅ `engine-cuda12` |
+| 任意 NVIDIA（驱动 ≥ 470） | — | ❌ | ✅ `engine-vulkan`（与算力无关，实测解码仅 0.7 t/s，仅作兜底） |
+
+**English**: the NInfer captioning / prompt-enhance path now picks its engine by an **exact compute-capability
+match** — no range extrapolation, because a cross-generation run aborts. RTX 30 (sm_86) has its own
+`engine/ninfer-sm86/` slot, but there is no upstream sm86 build: 30-series should use the
+**llama.cpp (local GGUF)** backend instead. Same for 20-series / 16-series.
+
+| GPU family | Compute cap | NInfer engine | llama.cpp backend (GGUF) |
+|---|---|---|---|
+| RTX 50 (5090 / 5080 / 5070 / 5060) | sm_120 (12.1 also maps to 120) | ✅ `engine-sm120.zip` | ✅ plugin-root CUDA 13, driver ≥ **580.65** |
+| RTX 40 (4090 / 4080 / 4070 / 4060) | sm_89 | ✅ `engine-sm89.zip` | ✅ same |
+| RTX 30 (3090 / 3080 / 3070 / 3060 / 3060 Ti) | sm_86 | ⚠️ slot only: used when you drop your own `engine/ninfer-sm86/`, otherwise the plugin tells you to switch backends | ✅ plugin-root CUDA 13, driver ≥ **580.65** |
+| RTX 20 (2080 Ti / 2070 / 2060) | sm_75 | ❌ no build | ✅ `engine-cuda12`, driver ≥ **525.60** |
+| GTX 16 (1660 / 1650 / 1650S) | sm_61 / sm_70 | ❌ no build | ✅ `engine-cuda12` |
+| any NVIDIA with driver ≥ 470 | — | ❌ | ✅ `engine-vulkan` (arch-independent; measured at only 0.7 tok/s, last resort) |
+
+### Upgrade steps / 升级步骤
+
+1. **拉最新插件代码 / Pull the latest code**：`git pull`，或用 ComfyUI-Manager 更新本插件后重启一次。
+2. **40 系 / 50 系（Ada / Blackwell）**：只需按卡重新下载对应引擎包（已装过则跳过）——
+   `engine-sm120.zip` 或 `engine-sm89.zip`，解压到插件根，保持 `engine/ninfer-smXX/ninfer-serve.exe` 结构。
+3. **30 系 / 20 系 / 16 系**：不需要 NInfer 包，改用 llama.cpp 后端：
+   1) 装 `BSAI-llama.cpp`（阈值见上表）；
+   2) 驱动能升到 **580.65** 就直接用它的插件根 CUDA 13 构建；
+   3) 驱动升不动就跑 `BSAI-llama.cpp\下载CUDA12引擎.bat` 补齐 `engine-cuda12` / `engine-vulkan`；
+   4) 在 ComfyUI 里把反推节点后端切到 **llama.cpp (local GGUF)**，GGUF 权重放
+      `ComfyUI/models/LLM/`（本机为 G 盘库 + C 盘 Junction，一份权重两盘可见）。
+4. **重启 ComfyUI**，节点首次运行时会打印实际选中的引擎目录（`ninfer-smXX` 或 `engine-*`）。
+5. **验证 / Verify**：
+
+```bat
+nvidia-smi --query-gpu=name,compute_cap,driver_version --format=csv
+python custom_nodes\BSAI-llama.cpp\bsai_engine_select.py --show
+custom_nodes\BSAI-llama.cpp\engine-vulkan\llama-server.exe --list-devices
+```
+
+6. **回滚 / Rollback**：`engine-selection.json` / `engine-force.txt` 在 `BSAI-llama.cpp` 里，
+   删掉或写 `auto` 即回到按算力自动选择；NInfer 侧把 `engine/ninfer-smXX/` 目录移走即可让它退回规则引擎。
+
+> 已实测（本机 RTX 5090 Laptop，sm_120 / 驱动 616.56）：NInfer 选型 `12.0→sm120`、`8.9→sm89`、
+> `8.6→sm86 槽位（无构建则明确报缺）`、`7.5/6.1→拒绝并提示改用 GGUF`；
+> llama.cpp 侧 8B Q4 实测 pp 963 / tg 38.4 tok/s，Vulkan 档 tg 0.73 tok/s（慢于纯 CPU 的 3.84）。
+> Measured on RTX 5090 Laptop (sm_120, driver 616.56): NInfer maps 12.0→sm120, 8.9→sm89,
+> 8.6→sm86 slot (clear "engine missing" error), 7.5/6.1→refused with a GGUF hint; on the
+> llama.cpp side, 8B Q4 hits pp 963 / tg 38.4 tok/s, while the Vulkan tier is 0.73 tok/s
+> (slower than CPU-only 3.84).
 
 ## Measured results (RTX 5090 Laptop 24G, distilled INT8, 1024² / 16 steps)
 

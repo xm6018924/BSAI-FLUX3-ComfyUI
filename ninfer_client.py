@@ -15,7 +15,10 @@ Design notes
 * GPU profile is picked from ``nvidia-smi --query-gpu=compute_cap``:
     >= 12.0 -> ninfer-sm120 (RTX 50-series)
     >=  8.9 -> ninfer-sm89  (RTX 40-series)
-  anything else raises a clear error.
+    8.0-8.8 -> ninfer-sm86  (RTX 30-series, only if a sm86 build is dropped in)
+  anything lower raises a clear error telling the user to use the llama.cpp
+  (local GGUF) backend instead. No range extrapolation: running an sm89 engine
+  on sm86 aborts.
 * Model discovery scans ``ComfyUI/models/LLM`` recursively for ``*.ninfer``
   files and prefers ``Ternary-Bonsai-2-27B.ninfer`` (small, fast, ~8 GiB).
 * Thinking is disabled (``--no-thinking``) because this enhancer only
@@ -66,7 +69,7 @@ def _resolve_engine_dir() -> Path:
         pass
     for d in cands:
         if any((d / sub / "ninfer-serve.exe").is_file()
-               for sub in ("ninfer-sm120", "ninfer-sm89")):
+               for sub in ("ninfer-sm120", "ninfer-sm89", "ninfer-sm86")):
             return d
     return _PLUGIN_DIR / "engine"
 
@@ -170,9 +173,16 @@ def _gpu_profile() -> dict:
         engine_sub = "ninfer-sm120"
     elif cap >= 8.9:
         engine_sub = "ninfer-sm89"
+    elif 8.0 <= cap < 8.9:
+        # RTX 30 系（sm86）等 Ampere 卡：上游没有 sm86 构建，但允许用户自建后落位。
+        # 不做区间外推——sm86 硬跑 sm89 引擎会直接 abort。
+        engine_sub = "ninfer-sm86"
     else:
         raise RuntimeError(
-            "内置 NInfer 引擎仅支持 RTX 40 系 (sm89) 与 RTX 50 系 (sm120) 显卡。"
+            "内置 NInfer 引擎只有 RTX 40 系 (sm89) 与 RTX 50 系 (sm120) 的构建，"
+            "当前显卡算力没有对应版本，跨代运行会直接 abort。"
+            "RTX 30 系 / 20 系 / 16 系请改用「llama.cpp (local GGUF)」后端；"
+            "若你自建了 ninfer-sm86，把它放进 engine/ninfer-sm86/ 即会被自动选中。"
         )
 
     exe = ENGINE_DIR / engine_sub / "ninfer-serve.exe"
