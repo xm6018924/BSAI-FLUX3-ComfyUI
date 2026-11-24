@@ -43,19 +43,19 @@ def list_nemotron_model_names():
 
 
 def list_strata_quant_options():
-    """Strata 引擎量化档下拉：Auto + Qwen3.8-Flash-Next 的 4 个量化档。"""
+    """Strata quant dropdown: Auto + the four Qwen3.8-Flash-Next quant levels."""
     try:
         import importlib.util as _ilu
         _p = os.path.join(_HERE, "..", "BSAI-LLM-Strata", "strata_manager.py")
         if not os.path.exists(_p):
-            return ["Auto (自动适配)"]
+            return ["Auto (auto)"]
         _spec = _ilu.spec_from_file_location("bsai_strata_manager", _p)
         _m = _ilu.module_from_spec(_spec)
         _spec.loader.exec_module(_m)
         opts = list(_m.QUANT_OPTIONS.keys())
-        return opts or ["Auto (自动适配)"]
+        return opts or ["Auto (auto)"]
     except Exception:
-        return ["Auto (自动适配)"]
+        return ["Auto (auto)"]
 
 # ---------------------------------------------------------------------------
 # Model recipes
@@ -68,7 +68,7 @@ def list_strata_quant_options():
 #   minimax_h3          = MiniMax H3 视频/图像
 MODEL_OPTIONS = ["flux3_klein", "flux3_klein_sd", "qwen_image_2.1", "qwen_image_2.1_turbo", "minimax_h3"]
 
-# 规则引擎：各模型的 positive 质量标签（增强片段）
+# Rule engine: per-model positive quality tags (appended to the output prompt)
 _RULE_POSITIVE = {
     "flux3_klein": (
         "masterpiece, best quality, extremely detailed, highly detailed face and hands, "
@@ -80,20 +80,23 @@ _RULE_POSITIVE = {
         "sharp focus, rich textures, 8k uhd, step-distilled fast render"
     ),
     "qwen_image_2.1": (
-        "高质量图像，细节丰富，主体清晰，光影自然，构图考究，画质细腻，"
-        "色彩准确，高分辨率，sharp focus, highly detailed"
+        "high quality image, rich details, clear subject, natural lighting, "
+        "well-considered composition, fine texture, accurate colors, high resolution, "
+        "sharp focus, highly detailed"
     ),
     "qwen_image_2.1_turbo": (
-        "高质量图像，细节丰富，主体清晰，光影自然，构图考究，画质细腻，"
-        "色彩准确，高分辨率，8步加速出图，细节锐利，sharp focus, highly detailed"
+        "high quality image, rich details, clear subject, natural lighting, "
+        "well-considered composition, fine texture, accurate colors, high resolution, "
+        "8-step accelerated render, crisp details, sharp focus, highly detailed"
     ),
     "minimax_h3": (
-        "电影级画面，电影感光线，浅景深，主体突出，画面通透，细节丰富，"
-        "构图讲究，专业摄影质感, cinematic lighting, film grain"
+        "cinematic frame, cinematic lighting, shallow depth of field, prominent subject, "
+        "clean and crisp image, rich details, considered composition, "
+        "professional photography feel, film grain"
     ),
 }
 
-# 规则引擎：各模型的 negative 标签
+# Rule engine: per-model negative tags
 _RULE_NEGATIVE = {
     "flux3_klein": (
         "lowres, bad anatomy, bad hands, missing fingers, extra digits, blurry, "
@@ -104,26 +107,26 @@ _RULE_NEGATIVE = {
         "jpeg artifacts, watermark, text, signature, deformed, ugly, oversaturated"
     ),
     "qwen_image_2.1": (
-        "低分辨率, 模糊, 畸变, 手指异常, 多余肢体, 水印, 文字, 签名, 变形, 过饱和, "
-        "lowres, bad anatomy, blurry, jpeg artifacts, watermark, text"
+        "low resolution, blurry, distorted, bad fingers, extra limbs, watermark, text, "
+        "signature, deformed, oversaturated, lowres, bad anatomy, jpeg artifacts"
     ),
     "qwen_image_2.1_turbo": (
-        "低分辨率, 模糊, 畸变, 手指异常, 多余肢体, 水印, 文字, 签名, 变形, 过饱和, "
-        "lowres, bad anatomy, blurry, jpeg artifacts, watermark, text"
+        "low resolution, blurry, distorted, bad fingers, extra limbs, watermark, text, "
+        "signature, deformed, oversaturated, lowres, bad anatomy, jpeg artifacts"
     ),
     "minimax_h3": (
-        "低画质, 模糊, 畸变, 闪烁, 伪影, 水印, 文字, 变形, 过饱和, 相机抖动, "
-        "lowres, blurry, flicker, artifacts, watermark, text, deformed, jitter"
+        "low quality, blurry, distorted, flickering, artifacts, watermark, text, "
+        "deformed, oversaturated, camera shake, lowres, flicker, jitter"
     ),
 }
 
-# 规则引擎：主体/场景细节补充片段（原始提示过短时追加，避免空泛）
+# Rule engine: subject/scene detail tail (appended when the prompt is too short)
 _RULE_DETAIL_TAIL = {
     "flux3_klein": ", intricate details, depth of field, ambient occlusion, ultra detailed",
     "flux3_klein_sd": ", intricate details, depth of field, ambient occlusion, crisp edges, ultra detailed",
-    "qwen_image_2.1": "，细节层次丰富，明暗过渡自然，景深控制得当，画面干净",
-    "qwen_image_2.1_turbo": "，细节层次丰富，明暗过渡自然，景深控制得当，8步加速出图，画面干净锐利",
-    "minimax_h3": "，运动感与氛围感兼具，镜头语言明确，光影层次丰富",
+    "qwen_image_2.1": ", rich detail layers, natural light transitions, well-controlled depth of field, clean image",
+    "qwen_image_2.1_turbo": ", rich detail layers, natural light transitions, well-controlled depth of field, 8-step accelerated render, clean and crisp image",
+    "minimax_h3": ", both motion and atmosphere, clear camera language, rich lighting layers",
 }
 
 # ---------------------------------------------------------------------------
@@ -206,7 +209,9 @@ def _rule_enhance(raw_prompt, target_model):
 
     subject = (raw_prompt or "").strip()
     if not subject:
-        subject = "通用场景：自然光下的主体特写，层次分明" if target_model != "qwen_image_2.1" else "通用场景，自然光主体特写"
+        subject = ("generic scene: subject close-up in natural light, clear separation of planes"
+                   if target_model != "qwen_image_2.1"
+                   else "generic scene, subject close-up in natural light")
 
     # 短提示自动补场景细节
     if len(subject) < 12:
@@ -253,21 +258,21 @@ class BSAI_FLUX3_PromptEnhancer:
                 "language": (["zh", "en"], {"default": "zh"}),
                 "max_tokens": ("INT", {"default": 512, "min": 64, "max": 2048, "step": 32}),
                 "temperature": ("FLOAT", {"default": 0.7, "min": 0.1, "max": 1.5, "step": 0.05}),
-                # 模型下拉允许「清空/（无）」：engine=none 直通模式不需要任何模型，
+                # 模型下拉允许「清空/（none）」：engine=none 直通模式不需要任何模型，
                 # 空值必须在选项列表里，否则 ComfyUI 校验直接拒绝整个提示词。
-                "ninfer_model": (["", "（无）", "(Auto — first model found)"] + list_ninfer_model_names(),
+                "ninfer_model": (["", "(none)", "(Auto — first model found)"] + list_ninfer_model_names(),
                                  {"default": "(Auto — first model found)",
-                                  "tooltip": "NInfer 后端专用：选择要加载的 *.ninfer 模型（models/LLM）；Auto 时取首选/第一个可用模型；清空/（无）=不指定（engine=none 直通时无需模型）。"}),
-                "nemotron_model": (["", "（无）", "(Auto — first model found)"] + list_nemotron_model_names(),
+                                  "tooltip": "NInfer backend only: *.ninfer model to load (models/LLM). Auto picks the preferred/first available model; empty/(none) = no model requested (not needed when engine=none)."}),
+                "nemotron_model": (["", "(none)", "(Auto — first model found)"] + list_nemotron_model_names(),
                                    {"default": "(Auto — first model found)",
-                                    "tooltip": "Nemotron 后端专用：选择要加载的 GGUF 模型（models/LLM/Nemotron，排除 mmproj）；Auto 时取第一个可用模型；清空/（无）=不指定（engine=none 直通时无需模型）。"}),
+                                    "tooltip": "Nemotron backend only: GGUF model to load (models/LLM/Nemotron, mmproj excluded). Auto picks the first available model; empty/(none) = no model requested (not needed when engine=none)."}),
             },
             "optional": {
                 "negative_hint": ("STRING", {"default": "", "multiline": True}),
                 "system_prompt": ("STRING", {"default": "", "multiline": True}),
-                # 追加在末尾，保持旧工作流 widgets_values 索引不变
-                "strata_quant": (list_strata_quant_options(), {"default": "Auto (自动适配)",
-                    "tooltip": "Strata 后端专用：选择 Qwen3.8-Flash-Next 量化档（Auto 自动适配 + Q2_0/IQ2_XS/IQ3_XXS/IQ3_S 四档）；仅在 Strata 未运行、需自动启动时生效。"}),
+                # Append at the end so old workflows keep their widgets_values indices
+                "strata_quant": (list_strata_quant_options(), {"default": "Auto (auto)",
+                    "tooltip": "Strata backend only: Qwen3.8-Flash-Next quant level (Auto plus Q2_0/IQ2_XS/IQ3_XXS/IQ3_S). Applies only when Strata is not running and has to be auto-started."}),
             },
         }
 
@@ -276,11 +281,22 @@ class BSAI_FLUX3_PromptEnhancer:
     FUNCTION = "execute"
     CATEGORY = "BSAI/FLUX3"
 
+    @classmethod
+    def VALIDATE_INPUTS(cls, ninfer_model=None, nemotron_model=None, strata_quant=None, **kwargs):
+        """Saved workflows carry the old Chinese widget values; accept them and let
+        execute() map them onto the current English ones."""
+        return True
+
     def execute(self, raw_prompt, target_model="flux3_klein", engine="ninfer",
                 language="zh", max_tokens=512, temperature=0.7, negative_hint="",
                 system_prompt="", ninfer_model="(Auto — first model found)",
                 nemotron_model="(Auto — first model found)",
-                strata_quant="Auto (自动适配)"):
+                strata_quant="Auto (auto)"):
+        # Legacy widget values from earlier builds / saved workflows.
+        if str(ninfer_model) == "（无）":
+            ninfer_model = "(none)"
+        if str(nemotron_model) == "（无）":
+            nemotron_model = "(none)"
         pos = None
         neg = None
         engine_used = "rule_only"
@@ -326,7 +342,7 @@ class BSAI_FLUX3_PromptEnhancer:
                             _m = _ilu.module_from_spec(_spec)
                             _spec.loader.exec_module(_m)
                             _ok, _msg = _m.StrataManager.ensure_running(
-                                quant_label=strata_quant or "Auto (自动适配)")
+                                quant_label=strata_quant or "Auto (auto)")
                             _started = bool(_ok)
                             if not _ok:
                                 print(f"[BSAI-FLUX3-Enhancer] StrataManager auto-start failed: {_msg}")

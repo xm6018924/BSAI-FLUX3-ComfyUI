@@ -166,7 +166,7 @@ def _gpu_profile() -> dict:
         cap = float(out.strip().splitlines()[0])
     except (OSError, subprocess.SubprocessError, ValueError, IndexError) as exc:
         raise RuntimeError(
-            "NInfer 需要受支持的 NVIDIA 显卡及 nvidia-smi。"
+            "NInfer requires a supported NVIDIA GPU and nvidia-smi."
         ) from exc
 
     if cap >= 12.0:
@@ -179,18 +179,19 @@ def _gpu_profile() -> dict:
         engine_sub = "ninfer-sm86"
     else:
         raise RuntimeError(
-            "内置 NInfer 引擎只有 RTX 40 系 (sm89) 与 RTX 50 系 (sm120) 的构建，"
-            "当前显卡算力没有对应版本，跨代运行会直接 abort。"
-            "RTX 30 系 / 20 系 / 16 系请改用「llama.cpp (local GGUF)」后端；"
-            "若你自建了 ninfer-sm86，把它放进 engine/ninfer-sm86/ 即会被自动选中。"
+            "The bundled NInfer engine ships builds for RTX 40 series (sm89) and RTX 50 "
+            "series (sm120) only; this GPU's compute capability has no matching build and "
+            "cross-generation binaries abort at load. On RTX 30/20/16 series use the "
+            "'llama.cpp (local GGUF)' backend instead, or place a self-built ninfer-sm86 "
+            "under engine/ninfer-sm86/ and it will be picked up."
         )
 
     exe = ENGINE_DIR / engine_sub / "ninfer-serve.exe"
     if not exe.is_file():
         raise RuntimeError(
-            f"当前 GPU 对应引擎缺失：{exe}。NInfer 引擎体积过大，不随插件分发："
-            "请安装 ComfyUI-AIManzi-MultimodalPrompt 插件（自带 engine/），"
-            "或把 engine/ 放到本插件目录，或设置环境变量 BSAI_NINFER_ENGINE_DIR。"
+            f"No engine matching this GPU: {exe}. The NInfer engine is too large to ship: "
+            "install the ComfyUI-AIManzi-MultimodalPrompt plugin (it bundles engine/), "
+            "or put engine/ in this plugin's folder, or point BSAI_NINFER_ENGINE_DIR at it."
         )
     return {
         "engine_dir": engine_sub,
@@ -230,7 +231,7 @@ def list_ninfer_model_names() -> list[str]:
     """
     models = _scan_ninfer_models()
     if not models:
-        return ["未找到 .ninfer 模型"]
+        return ["(no .ninfer model found)"]
     names = [m.name for m in models]
     preferred = PREFERRED_NINFER_MODEL
     if preferred in names:
@@ -248,14 +249,14 @@ def find_ninfer_model(selected_name: str | None = None) -> Path:
     models = _scan_ninfer_models()
     if not models:
         raise RuntimeError(
-            f"未找到任何 .ninfer 模型。请将模型放入 ComfyUI 的 {_llm_root()} 目录。"
+            f"No .ninfer model found. Put the model into the ComfyUI {_llm_root()} folder."
         )
     if selected_name:
         for m in models:
             if m.name == selected_name:
                 return m
         raise RuntimeError(
-            f"未找到模型“{selected_name}”。请确认文件仍在 {_llm_root()} 下。"
+            f"Model \"{selected_name}\" not found. Check that the file is still under {_llm_root()}."
         )
     for m in models:
         if m.name.lower() == PREFERRED_NINFER_MODEL.lower():
@@ -327,9 +328,9 @@ def _startup_log_tail(lines: int = 25) -> str:
     log = ENGINE_DIR / "ninfer-startup.log"
     try:
         content = log.read_text(encoding="utf-8", errors="replace").splitlines()
-        return "\n".join(content[-lines:]) or "(引擎未输出日志)"
+        return "\n".join(content[-lines:]) or "(engine produced no log output)"
     except OSError:
-        return "(未生成引擎日志)"
+        return "(no engine log was written)"
 
 
 def _iter_our_ninfer_processes():
@@ -514,13 +515,13 @@ def ensure_ninfer(model_name: str | None = None) -> None:
         if _OWNED_PROCESS.poll() is not None:
             detail = _startup_log_tail()
             raise RuntimeError(
-                f"内置 NInfer 启动后立即退出。引擎日志：\n{detail}"
+                f"The bundled NInfer exited right after start. Engine log:\n{detail}"
             )
         time.sleep(0.25)
 
     detail = _startup_log_tail()
     raise RuntimeError(
-        f"内置 NInfer 启动超时（{NINFER_STARTUP_TIMEOUT}s）。引擎日志：\n{detail}"
+        f"The bundled NInfer did not start within {NINFER_STARTUP_TIMEOUT}s. Engine log:\n{detail}"
     )
 
 
@@ -571,7 +572,7 @@ def ninfer_chat(messages: list[dict], max_tokens: int = 512,
     content = (data.get("choices") or [{}])[0].get("message", {}).get("content", "")
     answer = _clean_answer(str(content))
     if not answer:
-        raise RuntimeError("NInfer 返回空内容。")
+        raise RuntimeError("NInfer returned an empty response.")
     return answer
 
 

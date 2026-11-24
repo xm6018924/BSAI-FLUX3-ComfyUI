@@ -56,7 +56,7 @@ function setWidgetRowHidden(node, widget, hidden) {
 const AUTO_DEFAULTS = {
   ninfer_model: "(Auto — first model found)",
   nemotron_model: "(Auto — first model found)",
-  strata_quant: "Auto (自动适配)",
+  strata_quant: "Auto (auto)",
 };
 
 // 切换到具体引擎时，若对应模型控件当前为空/（无），自动回填 Auto 选项，
