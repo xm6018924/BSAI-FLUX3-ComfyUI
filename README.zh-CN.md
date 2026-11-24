@@ -4,6 +4,15 @@
 
 > English docs: [README.md](./README.md)
 
+## 本次更新（2026-11-24）
+
+界面英文化，已保存的工作流行为不变。
+
+- 规则引擎追加到 `positive` / `negative` 的质量标签、负向标签与细节补充片段改为**英文**（此前会向提示词里混入中文短语）。
+- 模型下拉（`ninfer_model`、`nemotron_model`）的占位由中文改为 `(none)`；`strata_quant` 默认 `Auto (auto)`，选项为 `Q2_0 (fastest)` … `IQ3_S (best quality)`。
+- 节点 tooltip、报错与状态文案改为英文，前端 `web/flux3_enhancer.js` 的默认值同步更新。
+- 向后兼容：旧工作流里保存的中文控件值仍被接受，并在 `execute()` 中归一化，无需重做工作流。
+
 ## 仓库结构
 
 ```

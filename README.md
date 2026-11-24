@@ -4,6 +4,15 @@ One-click deployment & tooling for **FLUX 3 Image Klein** (5.6B open weights, Bl
 
 > 中文说明见 [README.zh-CN.md](./README.zh-CN.md)。
 
+## Recent changes (2026-11-24)
+
+English UI pass — no behavioural change for saved workflows.
+
+- The rule engine now appends **English** quality / negative tags and the detail tail to the `positive` / `negative` outputs (they used to mix Chinese phrases into the prompt).
+- Model pickers (`ninfer_model`, `nemotron_model`) use `(none)` instead of the Chinese placeholder; `strata_quant` defaults to `Auto (auto)` and offers `Q2_0 (fastest)` … `IQ3_S (best quality)`.
+- Node tooltips, error messages and status text are English, and the front-end defaults in `web/flux3_enhancer.js` match.
+- Backwards compatible: saved workflows that still carry the old Chinese widget values are accepted and normalised in `execute()`, so nothing needs re-authoring.
+
 ## What's inside
 
 ```
